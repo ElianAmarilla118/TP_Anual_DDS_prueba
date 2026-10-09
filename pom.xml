@@ -2,61 +2,63 @@
 <project xmlns="http://apache.org" xmlns:xsi="http://w3.org"
          xsi:schemaLocation="http://apache.org https://apache.org">
     <modelVersion>4.0.0</modelVersion>
+    
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.3.4</version> <!-- Versión estable oficial de la rama 3.x -->
+        <version>3.3.4</version> <!-- Versión estable oficial de Spring Boot 3 -->
         <relativePath/> 
     </parent>
-    <groupId>com.grupo10</groupId>
-    <artifactId>servicio_donaciones</artifactId>
+
+    <groupId>ar.edu.utn.ba.dsi.g10</groupId>
+    <artifactId>servicio_incentivos</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>servicio_donaciones</name>
-    <description>Servicio de Donaciones - DonaTrack</description>
+    <name>servicio_incentivos</name>
+    <description>Servicio de Incentivos - DonaTrack</description>
 
     <properties>
         <java.version>17</java.version> <!-- Consistencia con la versión de Logística -->
     </properties>
 
     <dependencies>
-        <!-- Persistencia de datos relacionales -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-jpa</artifactId>
-        </dependency>
-
-        <!-- CORRECCIÓN: Starter web correcto para controladores y APIs REST -->
+        <!-- Core Web para exponer controladores y API REST -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
 
-        <!-- Driver de MySQL para compatibilidad de tipos -->
+        <!-- Persistencia de Datos Relacionales (Entrega 4) -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
+        </dependency>
+        
+        <!-- Driver de MySQL para compatibilidad de tipos con el DER físico -->
         <dependency>
             <groupId>com.mysql</groupId>
             <artifactId>mysql-connector-j</artifactId>
             <scope>runtime</scope>
         </dependency>
 
-        <!-- Motor H2 para persistencia en memoria local y Render efímero -->
+        <!-- Motor H2 para persistencia en memoria local y Render efímero (Alternativa A) -->
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
             <scope>runtime</scope>
         </dependency>
 
-        <!-- Reducción de código repetitivo boilerplate -->
+        <!-- Reducción de código repetitivo (Getters, Setters, Constructores) -->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <optional>true</optional>
         </dependency>
 
-        <!-- Requerido para Importador.java (Importación masiva de más de 10k filas por CSV) -->
+        <!-- Swagger UI para Documentación de Endpoints (Exigido en el TP) -->
         <dependency>
-            <groupId>com.opencsv</groupId>
-            <artifactId>opencsv</artifactId>
-            <version>5.9</version>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+            <version>2.6.0</version>
         </dependency>
 
         <!-- Testing estándar -->
@@ -69,6 +71,7 @@
 
     <build>
         <plugins>
+            <!-- Plugin oficial de Spring Boot para empaquetar el JAR ejecutable -->
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
