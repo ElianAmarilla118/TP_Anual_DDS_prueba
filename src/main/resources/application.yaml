@@ -1,0 +1,18 @@
+spring:
+  application:
+    name: broker
+
+server:
+  port: ${PORT:8083} # CORRECCIÓN: Render usa la variable PORT obligatoriamente
+
+springdoc:
+  swagger-ui:
+    path: /endpoints-docs
+
+conexiones:
+  # Apunta al controlador de notificaciones de Donaciones (CNotificaciones)
+  servicio-donaciones: ${SERVICIO_DONACIONES:http://localhost:8080/api/notificaciones}
+  servicio-incentivos: ${SERVICIO_INCENTIVOS:http://localhost:8082/api/incentivos/perfiles}
+  # Lógica del enunciado: balanceo entre logística online (principal) o local (de respaldo)
+  servicio-logistica-online: ${SERVICIO_LOGISTICA_ONLINE:http://servicio-logistica:8081/api}
+  servicio-logistica-local: ${SERVICIO_LOGISTICA_LOCAL:http://localhost:8081/api}
