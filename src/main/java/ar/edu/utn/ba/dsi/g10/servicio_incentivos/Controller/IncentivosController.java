@@ -24,7 +24,7 @@ import java.util.List;
 
 
 @RestController
-@RequestMapping("/incentivos")
+@RequestMapping("/api/incentivos")
 public class IncentivosController {
     private final ServicioIncentivos servicio;
     /* 
