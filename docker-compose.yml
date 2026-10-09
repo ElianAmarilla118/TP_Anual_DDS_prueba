@@ -1,0 +1,62 @@
+version: '3.8'
+
+services:
+  servicio-donaciones:
+    build:
+      context: ./servicio_donaciones
+      dockerfile: Dockerfile
+    container_name: donatrack-donaciones
+    ports:
+      - "8080:8080"
+    environment:
+      - PORT=8080
+      - DB_DONACIONES_URL=jdbc:h2:mem:donaciones_db;DB_CLOSE_DELAY=-1;MODE=MySQL
+      - BROKER_LOGISTICA_URL=http://servicio-broker:8083/api/donacionesAsignadas
+      - INCENTIVOS_URL=http://servicio-incentivos:8082/api
+    networks:
+      - donatrack-network
+
+  servicio-broker:
+    build:
+      context: ./broker # Tu nueva carpeta
+      dockerfile: Dockerfile
+    container_name: donatrack-broker
+    ports:
+      - "8083:8083"
+    environment:
+      - PORT=8083
+      - SERVICIO_DONACIONES=http://servicio-donaciones:8080/api/notificaciones
+      - SERVICIO_LOGISTICA_ONLINE=http://servicio-logistica:8081/api
+    networks:
+      - donatrack-network
+
+  servicio-logistica:
+    build:
+      context: ./Logistica
+      dockerfile: Dockerfile
+    container_name: donatrack-logistica
+    ports:
+      - "8081:8081"
+    environment:
+      - PORT=8081
+      - DB_URL=jdbc:h2:mem:logistica_db;DB_CLOSE_DELAY=-1;MODE=MySQL
+      - DONACIONES_URL=http://servicio-broker:8083/api/donacionesAsignadas
+    networks:
+      - donatrack-network
+
+  servicio-incentivos:
+    build:
+      context: ./servicio_incentivos
+      dockerfile: Dockerfile
+    container_name: donatrack-incentivos
+    ports:
+      - "8082:8082"
+    environment:
+      - PORT=8082
+      - DB_INCENTIVOS_URL=jdbc:h2:mem:incentivos_db;DB_CLOSE_DELAY=-1;MODE=MySQL
+    networks:
+      - donatrack-network
+
+networks:
+  donatrack-network:
+    driver: bridge
