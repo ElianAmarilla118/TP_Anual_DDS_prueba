@@ -1,7 +1,8 @@
 FROM eclipse-temurin:17-jdk-jammy AS build
 WORKDIR /app
 COPY pom.xml .
-RUN mvn dependency:go-offline || true
+COPY mvnw pom.xml ./
+RUN chmod +x mvnw
 COPY src src
 # Al no usar base de datos en este módulo, compila de inmediato
 RUN ./mvnw clean package -DskipTests || mvn clean package -DskipTests
