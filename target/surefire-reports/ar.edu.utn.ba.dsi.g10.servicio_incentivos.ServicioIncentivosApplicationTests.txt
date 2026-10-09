@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: ar.edu.utn.ba.dsi.g10.servicio_incentivos.ServicioIncentivosApplicationTests
+-------------------------------------------------------------------------------
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 8.399 s -- in ar.edu.utn.ba.dsi.g10.servicio_incentivos.ServicioIncentivosApplicationTests

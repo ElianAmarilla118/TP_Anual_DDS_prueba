@@ -11,12 +11,36 @@ import java.util.List;
 @Getter
 @Setter
 public class ProgresoMision {
-    private Mision MisionAsociada;
+    private Mision misionAsociada;
     private double progresoActual;
     private List<DonacionImportada> historialDonaciones = new ArrayList<>();
     private LocalDate fechaInicio;
     private LocalDate fechaCompletado;
     private boolean completada;
+
+    public Mision getMisionAsociada() {
+        return misionAsociada;
+    }
+
+    public void setMisionAsociada(Mision misionAsociada) {
+        this.misionAsociada = misionAsociada;
+    }
+
+    public double getProgresoActual() {
+        return progresoActual;
+    }
+
+    public void setProgresoActual(double progresoActual) {
+        this.progresoActual = progresoActual;
+    }
+
+    public List<DonacionImportada> getHistorialDonaciones() {
+        return historialDonaciones;
+    }
+
+    public void setHistorialDonaciones(List<DonacionImportada> historialDonaciones) {
+        this.historialDonaciones = historialDonaciones;
+    }
 
     public void reiniciar() {
         historialDonaciones.clear();
@@ -30,13 +54,13 @@ public class ProgresoMision {
             return;
         }
 
-        if (donacionImportada == null || MisionAsociada == null) {
+        if (donacionImportada == null || misionAsociada == null) {
             return;
         }
 
         historialDonaciones.add(donacionImportada);
 
-        progresoActual = MisionAsociada.calcularProgreso(
+        progresoActual = misionAsociada.calcularProgreso(
             historialDonaciones
         );
 

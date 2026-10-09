@@ -37,9 +37,8 @@ public class PerfilDonante {
 
     public double getPorcentajeProgreso() {
         if (historialMisiones.isEmpty()) return 0.0;
-        ProgresoMision ultimoProgreso = historialMisiones.getLast();
+        ProgresoMision ultimoProgreso = historialMisiones.get(historialMisiones.size() - 1);
         if (misionActual != null && ultimoProgreso.getMisionAsociada() != null) {
-            // Corrección de getId()
             if (misionActual.getId() == ultimoProgreso.getMisionAsociada().getId()) {
                 return ultimoProgreso.getProgresoActual();
             }
@@ -122,10 +121,31 @@ public class PerfilDonante {
         if (historialMisiones.isEmpty()) {
             inicializarProgreso();
         }
-        return historialMisiones.getLast();
+        return historialMisiones.get(historialMisiones.size() - 1);
     }
+
     public long getID() {
         return donanteID;
+    }
+
+    public long getDonanteID() {
+        return donanteID;
+    }
+
+    public void setDonanteID(long donanteID) {
+        this.donanteID = donanteID;
+    }
+
+    public Mision getMisionActual() {
+        return misionActual;
+    }
+
+    public void setMisionActual(Mision misionActual) {
+        this.misionActual = misionActual;
+    }
+
+    public List<ProgresoMision> getHistorialMisiones() {
+        return historialMisiones;
     }
     private void inicializarProgreso() {
         if (misionActual == null) return;

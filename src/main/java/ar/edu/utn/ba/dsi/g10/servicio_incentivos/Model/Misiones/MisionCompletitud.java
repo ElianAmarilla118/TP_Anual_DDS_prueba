@@ -13,6 +13,14 @@ import java.util.Set;
 public class MisionCompletitud extends Mision {
     private double categoriasDistintasRequeridas;
 
+    public double getCategoriasDistintasRequeridas() {
+        return categoriasDistintasRequeridas;
+    }
+
+    public void setCategoriasDistintasRequeridas(double categoriasDistintasRequeridas) {
+        this.categoriasDistintasRequeridas = categoriasDistintasRequeridas;
+    }
+
     @Override
     public double calcularProgreso(List<DonacionImportada> historialMision) {
         if (historialMision == null || historialMision.isEmpty()) {

@@ -26,17 +26,49 @@ public abstract class Mision {
     public long getId() {
         return id;
     }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
     public String getNombre() {
         return nombre;
     }
+
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
+
     public String getDescripcion() {
         return descripcion;
     }
-    public String getCategoria() {
-        return categoria.getCategoria();
+
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
     }
+
+    public String getCategoria() {
+        return categoria != null ? categoria.getCategoria() : null;
+    }
+
+    public void setCategoria(CategoriaDonante categoria) {
+        this.categoria = categoria;
+    }
+
+    public int getOrden() {
+        return orden;
+    }
+
+    public void setOrden(int orden) {
+        this.orden = orden;
+    }
+
     public Insignia getInsignia() {
         return insignia;
-    } 
+    }
+
+    public void setInsignia(Insignia insignia) {
+        this.insignia = insignia;
+    }
 }
 

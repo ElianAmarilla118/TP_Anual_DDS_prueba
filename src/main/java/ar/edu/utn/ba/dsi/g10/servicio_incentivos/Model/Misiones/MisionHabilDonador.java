@@ -11,6 +11,14 @@ import java.util.List;
 public class MisionHabilDonador extends Mision {
     private double cantidadBienesRequerida;
 
+    public double getCantidadBienesRequerida() {
+        return cantidadBienesRequerida;
+    }
+
+    public void setCantidadBienesRequerida(double cantidadBienesRequerida) {
+        this.cantidadBienesRequerida = cantidadBienesRequerida;
+    }
+
     @Override
     public double calcularProgreso(List<DonacionImportada> historialMision) {
         if (historialMision == null || historialMision.isEmpty()) {

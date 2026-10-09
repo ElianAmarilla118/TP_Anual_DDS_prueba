@@ -10,6 +10,15 @@ import java.util.List;
 @Setter
 public class MisionDonacionesExitosas extends Mision {
     private double donacionesExitosasRequeridas;
+
+    public double getDonacionesExitosasRequeridas() {
+        return donacionesExitosasRequeridas;
+    }
+
+    public void setDonacionesExitosasRequeridas(double donacionesExitosasRequeridas) {
+        this.donacionesExitosasRequeridas = donacionesExitosasRequeridas;
+    }
+
     @Override
     public double calcularProgreso(List<DonacionImportada> historialMision) {
         if (historialMision == null || historialMision.isEmpty()) {

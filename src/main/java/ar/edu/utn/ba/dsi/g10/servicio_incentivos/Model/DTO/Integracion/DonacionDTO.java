@@ -18,4 +18,44 @@ public class DonacionDTO {
     private List<Object> categoriasIncluidas; // o List<String> / DTO si solo precisan el nombre
     private Integer cantBienes;
     private Integer cantidadSegmentadasEntregadas;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Date getFechaEntrada() {
+        return fechaEntrada;
+    }
+
+    public void setFechaEntrada(Date fechaEntrada) {
+        this.fechaEntrada = fechaEntrada;
+    }
+
+    public List<Object> getCategoriasIncluidas() {
+        return categoriasIncluidas;
+    }
+
+    public void setCategoriasIncluidas(List<Object> categoriasIncluidas) {
+        this.categoriasIncluidas = categoriasIncluidas;
+    }
+
+    public Integer getCantBienes() {
+        return cantBienes;
+    }
+
+    public void setCantBienes(Integer cantBienes) {
+        this.cantBienes = cantBienes;
+    }
+
+    public Integer getCantidadSegmentadasEntregadas() {
+        return cantidadSegmentadasEntregadas;
+    }
+
+    public void setCantidadSegmentadasEntregadas(Integer cantidadSegmentadasEntregadas) {
+        this.cantidadSegmentadasEntregadas = cantidadSegmentadasEntregadas;
+    }
 }
