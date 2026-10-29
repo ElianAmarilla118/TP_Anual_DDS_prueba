@@ -7,6 +7,7 @@ import lombok.Setter;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import jakarta.persistence.*;
 
@@ -31,7 +32,7 @@ public class ProgresoMision {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "mision_id", nullable = false)
-    private Mision MisionAsociada;
+    private Mision misionAsociada;
 
     @Column(name = "progreso_actual", nullable = false)
     private double progresoActual;
@@ -109,13 +110,13 @@ public class ProgresoMision {
             return;
         }
 
-        if (donacionImportada == null || MisionAsociada == null) {
+        if (donacionImportada == null || misionAsociada == null) {
             return;
         }
 
         historialDonaciones.add(donacionImportada);
 
-        progresoActual = MisionAsociada.calcularProgreso(
+        progresoActual = misionAsociada.calcularProgreso(
             historialDonaciones
         );
 

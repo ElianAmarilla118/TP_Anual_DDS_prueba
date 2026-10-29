@@ -30,14 +30,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class IncentivosController {
     private final ServicioIncentivos servicio;
-    /* 
-    public IncentivosController() {
-        this(new ServicioIncentivos());
-    }
-    */
-    public IncentivosController(ServicioIncentivos servicio) {
-        this.servicio = servicio;
-    }
     //post funcionando
     @PostMapping("/{donanteId}/donaciones")
     public ResponseEntity<String> procesarDonacion(
@@ -264,7 +256,7 @@ public ResponseEntity<?> obtenerRankingMensual(){
     public ResponseEntity<Integer> recibirEntregaConfirmada(@RequestBody MensajeConfirmacionIncentivosDTO mensaje) {
         try {
             // Procesamos la lógica en el servicio
-            servicioIncentivos.procesarConfirmacionIncentivos(mensaje);
+            servicio.procesarConfirmacionIncentivos(mensaje);
             
             // Retornamos HTTP 200 OK con el entero 200 en el body exigido por el RestClient
             return ResponseEntity.ok(200);

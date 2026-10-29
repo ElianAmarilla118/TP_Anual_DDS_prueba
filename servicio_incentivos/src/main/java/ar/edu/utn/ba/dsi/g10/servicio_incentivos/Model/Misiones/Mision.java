@@ -1,7 +1,6 @@
 package ar.edu.utn.ba.dsi.g10.servicio_incentivos.Model.Misiones;
 
-import ar.edu.utn.ba.dsi.g10.servicio_incentivos.Model.CategoriasDonante.CategoriaDonante;
-
+import ar.edu.utn.ba.dsi.g10.servicio_incentivos.Model.CategoriasDonante.Categoria;
 import ar.edu.utn.ba.dsi.g10.servicio_incentivos.Model.Perfil.DonacionImportada;
 import lombok.Getter;
 import lombok.Setter;
@@ -36,7 +35,7 @@ public abstract class Mision {
     // no necesita un objeto con operaciones para avanzar la categoria de un donante. cambio a categoria
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private Categoria categoria = new Categoria()/*Inicializo la categotia*/; // minúscula inicial
+    private Categoria categoria = Categoria.COLABORADOR;
 
     @Column(nullable = false)
     private int orden;
@@ -60,7 +59,7 @@ public abstract class Mision {
         return descripcion;
     }
     public String getCategoria() {
-        return categoria.getCategoria();
+        return categoria != null ? categoria.getNombre() : Categoria.COLABORADOR.getNombre();
     }
     public Insignia getInsignia() {
         return insignia;

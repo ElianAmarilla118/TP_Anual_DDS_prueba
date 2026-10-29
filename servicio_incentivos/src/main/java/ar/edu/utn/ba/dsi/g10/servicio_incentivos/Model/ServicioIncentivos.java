@@ -158,8 +158,7 @@ public class ServicioIncentivos {
         if (perfil != null && nuevaMision != null) {
             perfil.setMisionActual(nuevaMision);
 
-            ProgresoMision nuevoProgreso = new ProgresoMision();
-            nuevoProgreso.setMisionAsociada(nuevaMision);
+            ProgresoMision nuevoProgreso = new ProgresoMision(perfil, nuevaMision, java.time.LocalDate.now());
             nuevoProgreso.setProgresoActual(0.0);
             perfil.getHistorialMisiones().add(nuevoProgreso);
         }

@@ -5,7 +5,6 @@ import lombok.Getter;
 import lombok.Setter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.List;
 
 import jakarta.persistence.*;
 
@@ -22,7 +21,7 @@ public class CategoriaDonante {
 
     // no interviene en el progreso ni en la seleccion de misión. Las misiones son del catalogo y
     // pertenecen a una categoria; no hace falta mantener otra lista dentro de cada donante
-    // private List<Mision> misiones = new ArrayList<>();
+    private final List<Mision> misiones = new ArrayList<>();
 
     // Constructor por defecto explícito
     public CategoriaDonante() {

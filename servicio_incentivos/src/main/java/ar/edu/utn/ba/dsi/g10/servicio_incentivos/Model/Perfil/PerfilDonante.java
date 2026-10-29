@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import jakarta.persistence.*;
 
@@ -90,18 +91,11 @@ public class PerfilDonante {
         if (insignia == null) return false;
 
         boolean yaOtorgada = insignias.stream()
-            .anyMatch(a ->
-                Objects.equals(
-                    a.getInsignia().getID(),
-                    insignia.getID()
-                )
-            );
+            .anyMatch(a -> Objects.equals(a.getID(), insignia.getID()));
 
         if (yaOtorgada) return false;
 
-        insignias.add(
-            new AsignacionInsignia(this, insignia, LocalDate.now())
-        );
+        insignias.add(insignia);
 
         return true;
     }

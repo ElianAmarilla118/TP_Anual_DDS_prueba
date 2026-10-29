@@ -1,11 +1,8 @@
 package ar.edu.utn.ba.dsi.g10.servicio_incentivos.Model.Misiones;
 
-import ar.edu.utn.ba.dsi.g10.servicio_incentivos.Model.Misiones.Insignia;
-import ar.edu.utn.ba.dsi.g10.servicio_incentivos.Model.Misiones.Mision;
-import ar.edu.utn.ba.dsi.g10.servicio_incentivos.Model.Misiones.MisionCompletitud;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-@Component
 @Service
 @Transactional(readOnly = true)
 public class CatalogoMisiones {
