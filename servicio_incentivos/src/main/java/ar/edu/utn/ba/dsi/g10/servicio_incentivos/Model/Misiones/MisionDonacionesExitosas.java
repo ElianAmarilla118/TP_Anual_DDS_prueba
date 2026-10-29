@@ -6,10 +6,17 @@ import lombok.Setter;
 
 import java.util.List;
 
+import jakarta.persistence.*;
+
 @Getter
 @Setter
+@Entity
+@DiscriminatorValue("EXITOSAS")
 public class MisionDonacionesExitosas extends Mision {
+
+    @Column(name = "donaciones_exitosas_requeridas")
     private double donacionesExitosasRequeridas;
+
     @Override
     public double calcularProgreso(List<DonacionImportada> historialMision) {
         if (historialMision == null || historialMision.isEmpty()) {

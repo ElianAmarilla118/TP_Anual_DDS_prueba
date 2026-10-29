@@ -6,7 +6,15 @@ import ar.edu.utn.ba.dsi.g10.servicio_incentivos.Model.Misiones.MisionCompletitu
 import org.springframework.stereotype.Component;
 
 @Component
+@Service
+@Transactional(readOnly = true)
 public class CatalogoMisiones {
+
+  private final MisionRepository misiones;
+
+  public CatalogoMisiones(MisionRepository misiones) {
+    this.misiones = misiones;
+  }
 
   public Mision obtenerPrimeraMision() {
     MisionCompletitud mision = new MisionCompletitud();

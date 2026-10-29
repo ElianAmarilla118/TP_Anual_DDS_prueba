@@ -8,9 +8,15 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import jakarta.persistence.*;
+
 @Getter
 @Setter
+@Entity
+@DiscriminatorValue("COMPLETITUD")
 public class MisionCompletitud extends Mision {
+
+    @Column(name = "categorias_distintas_requeridas")
     private double categoriasDistintasRequeridas;
 
     @Override

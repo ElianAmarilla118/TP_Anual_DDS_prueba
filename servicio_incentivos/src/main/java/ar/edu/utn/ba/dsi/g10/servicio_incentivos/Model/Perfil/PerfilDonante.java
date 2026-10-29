@@ -11,18 +11,49 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import jakarta.persistence.*;
+
 @Getter
 @Setter
 @NoArgsConstructor
+@Entity
+@Table(name = "perfil_donante")
 public class PerfilDonante {
+
+    @Id
+    @Column(name = "donante_id")
     private long donanteID; // saque el "final" para que sea privado común y se pueda deserializar
+
+    @Version
+    private Long version;
+
+    @Embedded
     private CategoriaDonante categoria;
+
+    @Column(name = "total_donaciones_historicas", nullable = false)
     private int totalDonacionesHistoricas;
+
+    @Column(name = "total_organizaciones_ayudadas", nullable = false)
     private int totalOrganizacionesAyudadas;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "mision_actual_id")
     private Mision misionActual;
+
+    @Embedded
     private RachaDonante racha;
 
+    @OneToMany(
+        mappedBy = "perfil",
+        cascade = CascadeType.PERSIST
+    )
     private final List<Insignia> insignias = new ArrayList<>();
+
+    @OneToMany(
+        mappedBy = "perfil",
+        cascade = CascadeType.PERSIST
+    )
+    @OrderBy("id ASC")
     private final List<ProgresoMision> historialMisiones = new ArrayList<>();
 
 
@@ -36,15 +67,8 @@ public class PerfilDonante {
     }
 
     public double getPorcentajeProgreso() {
-        if (historialMisiones.isEmpty()) return 0.0;
-        ProgresoMision ultimoProgreso = historialMisiones.getLast();
-        if (misionActual != null && ultimoProgreso.getMisionAsociada() != null) {
-            // Corrección de getId()
-            if (misionActual.getId() == ultimoProgreso.getMisionAsociada().getId()) {
-                return ultimoProgreso.getProgresoActual();
-            }
-        }
-        return 0.0;
+        ProgresoMision progreso = getProgreso();
+        return progreso == null ? 0.0 : progreso.getProgresoActual();
     }
 
     public void subirCategoria() {
@@ -55,86 +79,57 @@ public class PerfilDonante {
     }
 
     public boolean misionCompletada() {
-        ProgresoMision progresoActual = getProgreso();
-
-        if (progresoActual == null || misionActual == null) {
-            return false;
-        }
-
-        Mision misionDelProgreso = progresoActual.getMisionAsociada();
-
-        if (misionDelProgreso == null) {
-            return false;
-        }
-
-        boolean correspondeALaMisionActual =
-            misionDelProgreso.getId() == misionActual.getId();
-
-        return correspondeALaMisionActual
-            && progresoActual.getCompletada();
+        ProgresoMision progreso = getProgreso();
+        return progreso != null && progreso.getCompletada();
     }
 
     public boolean otorgarInsigniaSiCorresponde() {
-        if (!misionCompletada()) {
-            return false;
-        }
+        if (!misionCompletada()) return false;
 
-        Insignia insigniaDeLaMision = misionActual.getInsignia();
-
-        if (insigniaDeLaMision == null) {
-            return false;
-        }
+        Insignia insignia = misionActual.getInsignia();
+        if (insignia == null) return false;
 
         boolean yaOtorgada = insignias.stream()
-            .anyMatch(insignia ->
-                insignia.getID() == insigniaDeLaMision.getID()
+            .anyMatch(a ->
+                Objects.equals(
+                    a.getInsignia().getID(),
+                    insignia.getID()
+                )
             );
 
-        if (yaOtorgada) {
-            return false;
-        }
+        if (yaOtorgada) return false;
 
-        Insignia insigniaDelDonante = new Insignia();
-
-        insigniaDelDonante.setID(insigniaDeLaMision.getID());
-        insigniaDelDonante.setNombre(insigniaDeLaMision.getNombre());
-        insigniaDelDonante.setDescripcion(
-            insigniaDeLaMision.getDescripcion()
+        insignias.add(
+            new AsignacionInsignia(this, insignia, LocalDate.now())
         );
-        insigniaDelDonante.setImagenURL(
-            insigniaDeLaMision.getImagenURL()
-        );
-        insigniaDelDonante.setEsVisible(
-            insigniaDeLaMision.isEsVisible()
-        );
-
-        insignias.add(insigniaDelDonante);
 
         return true;
     }
 
     public ProgresoMision getProgreso() {
+        if (misionActual == null) return null;
 
-        if (misionActual == null) {
-            return null;
-        }
-
-        if (historialMisiones.isEmpty()) {
-            inicializarProgreso();
-        }
-        return historialMisiones.getLast();
+        return historialMisiones.stream()
+            .filter(p ->
+                Objects.equals(
+                    p.getMisionAsociada().getId(),
+                    misionActual.getId()
+                )
+            )
+            .findFirst()
+            .orElse(null);
     }
+
     public long getID() {
         return donanteID;
     }
+
     private void inicializarProgreso() {
-        if (misionActual == null) return;
-        if (historialMisiones.isEmpty()) {
-            ProgresoMision progresoInicial = new ProgresoMision();
-            progresoInicial.setMisionAsociada(misionActual);
-            progresoInicial.setProgresoActual(0.0);
-            historialMisiones.add(progresoInicial);
-        }
+        if (misionActual == null || getProgreso() != null) return;
+
+        historialMisiones.add(
+            new ProgresoMision(this, misionActual, LocalDate.now())
+        );
     }
 
     public void sumarDonacion() {
@@ -165,5 +160,11 @@ public class PerfilDonante {
                 .filter(ProgresoMision::getCompletada)
                 .count();
     }
+
+    public void asignarMision(Mision mision) {
+        this.misionActual = mision;
+        inicializarProgreso();
+    }
+
 }
 

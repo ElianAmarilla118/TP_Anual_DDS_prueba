@@ -7,15 +7,42 @@ import lombok.Getter;
 import lombok.Setter;
 import java.util.List;
 
+import jakarta.persistence.*;
+
 @Getter
 @Setter
+@Entity
+@Table(
+    name = "mision",
+    uniqueConstraints = @UniqueConstraint(
+        columnNames = {"categoria", "orden"}
+    )
+)
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name = "tipo_mision")
 public abstract class Mision {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
+
+    @Column(nullable = false)
     private String nombre;
+
+
     private String descripcion;
-    //TODO: Revisar si la inicializacion esta bien
-    private CategoriaDonante categoria = new CategoriaDonante()/*Inicializo la categotia*/; // minúscula inicial
+
+    //una misio necesita indicar “pertenezco a COLABORADOR”
+    // no necesita un objeto con operaciones para avanzar la categoria de un donante. cambio a categoria
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Categoria categoria = new Categoria()/*Inicializo la categotia*/; // minúscula inicial
+
+    @Column(nullable = false)
     private int orden;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "insignia_id")
     private Insignia insignia;           // minúscula inicial
 
     public abstract double calcularProgreso(List<DonacionImportada> historialProgreso);

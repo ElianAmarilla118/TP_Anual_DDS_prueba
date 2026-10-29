@@ -12,14 +12,22 @@ import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.List;
 
+import jakarta.persistence.*;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Embeddable
 public class RachaDonante {
+
+    @Column(name = "racha_actual", nullable = false)
     private int rachaActual;
+
+    @Column(name = "racha_maxima", nullable = false)
     private int rachaMaxima;
+
+    @Column(name = "fecha_ultima_donacion")
     private LocalDate fechaUltimaDonacion;
 
     // antes comparabamos hasta 30 dias, no contemplabamos los meses con 31 dias, en algunos casos la racha se hubiese contabilizado mal

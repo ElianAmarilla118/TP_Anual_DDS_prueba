@@ -7,13 +7,22 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.List;
 
+import jakarta.persistence.*;
 
 @Getter
 @Setter
+@Embeddable //sus atributos se guardan en PerfilDonante, no tiene id ni tabla propia
 public class CategoriaDonante {
+
     // Se agrego una asignación por defecto al declarar el atributo
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "categoria", nullable = false)
     private Categoria categoria = Categoria.COLABORADOR;
-    private List<Mision> misiones = new ArrayList<>();
+
+    // no interviene en el progreso ni en la seleccion de misión. Las misiones son del catalogo y
+    // pertenecen a una categoria; no hace falta mantener otra lista dentro de cada donante
+    // private List<Mision> misiones = new ArrayList<>();
 
     // Constructor por defecto explícito
     public CategoriaDonante() {

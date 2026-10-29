@@ -7,7 +7,13 @@ import java.time.YearMonth;
 import java.util.Comparator;
 import java.util.List;
 
+import jakarta.persistence.*;
+
+@Entity
+@DiscriminatorValue("RACHA")
 public class MisionRacha extends Mision {
+
+    @Column(name = "meses_consecutivos_requeridos")
     private double mesesConsecutivosRequeridos = 10.0;
 
     //TODO: el progreso de mision racha funciona, igual revisar

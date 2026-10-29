@@ -6,9 +6,15 @@ import lombok.Setter;
 
 import java.util.List;
 
+import jakarta.persistence.*;
+
 @Getter
 @Setter
+@Entity
+@DiscriminatorValue("BIENES")
 public class MisionHabilDonador extends Mision {
+
+    @Column(name = "cantidad_bienes_requerida")
     private double cantidadBienesRequerida;
 
     @Override
