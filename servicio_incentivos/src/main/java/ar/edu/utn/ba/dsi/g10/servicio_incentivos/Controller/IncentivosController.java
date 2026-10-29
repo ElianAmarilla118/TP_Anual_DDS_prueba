@@ -6,9 +6,11 @@ import ar.edu.utn.ba.dsi.g10.servicio_incentivos.Model.Perfil.DonacionImportada;
 import ar.edu.utn.ba.dsi.g10.servicio_incentivos.Model.Perfil.PerfilDonante;
 import ar.edu.utn.ba.dsi.g10.servicio_incentivos.Model.Perfil.ProgresoMision;
 import ar.edu.utn.ba.dsi.g10.servicio_incentivos.Model.Ranking.PosicionRanking;
+import lombok.RequiredArgsConstructor;
 import ar.edu.utn.ba.dsi.g10.servicio_incentivos.Model.ServicioIncentivos;
 import ar.edu.utn.ba.dsi.g10.servicio_incentivos.Model.DTO.MisionResponseDTO;
 import ar.edu.utn.ba.dsi.g10.servicio_incentivos.Model.DTO.PosicionRankingDTO;
+import ar.edu.utn.ba.dsi.g10.servicio_incentivos.Model.DTO.Integracion.MensajeConfirmacionIncentivosDTO;
 import ar.edu.utn.ba.dsi.g10.servicio_incentivos.Model.DTO.PerfilMetricasDTO;
 import ar.edu.utn.ba.dsi.g10.servicio_incentivos.Model.DTO.InsigniaResponseDTO;
 import org.springframework.http.ResponseEntity;
@@ -25,6 +27,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/incentivos")
+@RequiredArgsConstructor
 public class IncentivosController {
     private final ServicioIncentivos servicio;
     /* 
@@ -256,6 +259,22 @@ public ResponseEntity<?> obtenerRankingMensual(){
         }
         return ResponseEntity.ok("Perfil eliminado correctamente");
     }
+
+    @PostMapping("/entregasConfirmadas")
+    public ResponseEntity<Integer> recibirEntregaConfirmada(@RequestBody MensajeConfirmacionIncentivosDTO mensaje) {
+        try {
+            // Procesamos la lógica en el servicio
+            servicioIncentivos.procesarConfirmacionIncentivos(mensaje);
+            
+            // Retornamos HTTP 200 OK con el entero 200 en el body exigido por el RestClient
+            return ResponseEntity.ok(200);
+            
+        } catch (Exception e) {
+            // Si algo falla, responde 500 para que el Broker lance su respectiva HTTP Error Exception
+            return ResponseEntity.internalServerError().body(500);
+        }
+    }
+
 
 }
 
