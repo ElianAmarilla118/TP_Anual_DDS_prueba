@@ -3,8 +3,8 @@ spring:
     name: servicio_incentivos
 
   datasource:
-    # 🟢 Escribimos de forma directa la URL interna JDBC corregida para Java
-    url: jdbc:postgresql://dpg-dbvh6uc6qcc73f3htvg-a:5432/incentivos_db_ulcg
+    # 🟢 Forzamos el host estático interno agregando explícitamente el parámetro de conexión SSL
+    url: jdbc:postgresql://dpg-dbvh6uc6qcc73f3htvg-a:5432/incentivos_db_ulcg?ssl=true&sslmode=require
     username: ${DATABASE_USERNAME}
     password: ${DATABASE_PASSWORD}
     driver-class-name: org.postgresql.Driver
