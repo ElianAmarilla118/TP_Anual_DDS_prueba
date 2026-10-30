@@ -3,6 +3,8 @@ package ar.edu.utn.ba.dsi.g10.servicio_incentivos.Model.CategoriasDonante;
 import ar.edu.utn.ba.dsi.g10.servicio_incentivos.Model.Misiones.Mision;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.beans.Transient;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,6 +23,7 @@ public class CategoriaDonante {
 
     // no interviene en el progreso ni en la seleccion de misión. Las misiones son del catalogo y
     // pertenecen a una categoria; no hace falta mantener otra lista dentro de cada donante
+    @Transient
     private final List<Mision> misiones = new ArrayList<>();
 
     // Constructor por defecto explícito
