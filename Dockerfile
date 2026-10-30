@@ -6,7 +6,7 @@ WORKDIR /app
 COPY pom.xml .
 RUN mvn dependency:go-offline
 
-# Copiamos el código fuente de tu aplicación de donaciones
+# Copiamos el código fuente de tu aplicación de incentivos
 COPY src src
 
 # Compilamos y empaquetamos el proyecto omitiendo los tests para acelerar el despliegue
