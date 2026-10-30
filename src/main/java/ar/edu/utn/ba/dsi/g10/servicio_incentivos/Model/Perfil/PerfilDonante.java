@@ -46,7 +46,8 @@ public class PerfilDonante {
 
     @OneToMany(
         mappedBy = "perfil",
-        cascade = CascadeType.PERSIST
+        cascade = CascadeType.ALL,
+        orphanRemoval = true
     )
     private final List<Insignia> insignias = new ArrayList<>();
 
@@ -87,13 +88,16 @@ public class PerfilDonante {
     public boolean otorgarInsigniaSiCorresponde() {
         if (!misionCompletada()) return false;
 
-        Insignia insignia = misionActual.getInsignia();
-        if (insignia == null) return false;
+        Insignia insigniaAResolver = misionActual.getInsignia();
+        if (insigniaAResolver == null) return false;
 
         boolean yaOtorgada = insignias.stream()
-            .anyMatch(a -> Objects.equals(a.getID(), insignia.getID()));
+             .anyMatch(a -> a.getInsignia() != null && Objects.equals(a.getInsignia().getID(), insigniaAResolver.getID()));
 
         if (yaOtorgada) return false;
+
+         AsignacionInsignia nuevaAsignacion = new AsignacionInsignia(this, insigniaAResolver, LocalDate.now());
+        insignias.add(nuevaAsignacion);
 
         insignias.add(insignia);
 
@@ -146,8 +150,11 @@ public class PerfilDonante {
     }
 
     public List<Insignia> getInsignias() {
-        return insignias;
-    }
+    return insignias.stream()
+            .map(AsignacionInsignia::getInsignia)
+            .filter(Objects::nonNull)
+            .toList();
+}
 
     public int getMisionesCompletadas() {
         return (int) historialMisiones.stream()

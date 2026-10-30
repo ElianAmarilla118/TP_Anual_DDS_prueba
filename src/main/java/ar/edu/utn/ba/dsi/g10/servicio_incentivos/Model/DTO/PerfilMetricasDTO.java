@@ -13,7 +13,7 @@ public class PerfilMetricasDTO {
     public PerfilMetricasDTO(PerfilDonante perfil) {
         this.id = perfil.getID();
         this.categoriaActual = perfil.getCategoria();
-        this.cantidadInsignias = perfil.getInsignias() != null ? perfil.getInsignias().size() : 0;
+        this.cantidadInsignias = perfil.getInsignias().size();
         this.misionesCompletadas = perfil.getMisionesCompletadas();
     }
 }
