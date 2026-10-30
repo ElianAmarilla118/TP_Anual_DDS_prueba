@@ -4,27 +4,19 @@ import ar.edu.utn.ba.dsi.g10.servicio_incentivos.Model.CategoriasDonante.Categor
 import ar.edu.utn.ba.dsi.g10.servicio_incentivos.Model.Misiones.AsignacionInsignia;
 import ar.edu.utn.ba.dsi.g10.servicio_incentivos.Model.Misiones.Insignia;
 import ar.edu.utn.ba.dsi.g10.servicio_incentivos.Model.Misiones.Mision;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.NoArgsConstructor;
-
+import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import jakarta.persistence.*;
-
-@Getter
-@Setter
-@NoArgsConstructor
 @Entity
 @Table(name = "perfil_donante")
 public class PerfilDonante {
 
     @Id
     @Column(name = "donante_id")
-    private long donanteID; // saque el "final" para que sea privado común y se pueda deserializar
+    private long donanteID;
 
     @Version
     private Long version;
@@ -59,14 +51,98 @@ public class PerfilDonante {
     @OrderBy("id ASC")
     private final List<ProgresoMision> historialMisiones = new ArrayList<>();
 
+    public PerfilDonante() {
+    }
 
     public PerfilDonante(long donanteID, CategoriaDonante categoria, Mision misionActual) {
         this.donanteID = donanteID;
         this.categoria = categoria;
         this.misionActual = misionActual;
         this.racha = new RachaDonante();
-
         inicializarProgreso();
+    }
+
+    public long getDonanteID() {
+        return donanteID;
+    }
+
+    public void setDonanteID(long donanteID) {
+        this.donanteID = donanteID;
+    }
+
+    public long getID() {
+        return donanteID;
+    }
+
+    public void setID(long donanteID) {
+        this.donanteID = donanteID;
+    }
+
+    public Long getVersion() {
+        return version;
+    }
+
+    public void setVersion(Long version) {
+        this.version = version;
+    }
+
+    public CategoriaDonante getCategoriaDonante() {
+        return categoria;
+    }
+
+    public void setCategoria(CategoriaDonante categoria) {
+        this.categoria = categoria;
+    }
+
+    public String getCategoria() {
+        return categoria != null ? categoria.getCategoria() : "Sin categoría";
+    }
+
+    public int getTotalDonacionesHistoricas() {
+        return totalDonacionesHistoricas;
+    }
+
+    public void setTotalDonacionesHistoricas(int totalDonacionesHistoricas) {
+        this.totalDonacionesHistoricas = totalDonacionesHistoricas;
+    }
+
+    public int getTotalOrganizacionesAyudadas() {
+        return totalOrganizacionesAyudadas;
+    }
+
+    public void setTotalOrganizacionesAyudadas(int totalOrganizacionesAyudadas) {
+        this.totalOrganizacionesAyudadas = totalOrganizacionesAyudadas;
+    }
+
+    public Mision getMisionActual() {
+        return misionActual;
+    }
+
+    public void setMisionActual(Mision misionActual) {
+        this.misionActual = misionActual;
+    }
+
+    public RachaDonante getRacha() {
+        return racha;
+    }
+
+    public void setRacha(RachaDonante racha) {
+        this.racha = racha;
+    }
+
+    public List<AsignacionInsignia> getInsigniasAsignadas() {
+        return insignias;
+    }
+
+    public List<Insignia> getInsignias() {
+        return insignias.stream()
+            .map(AsignacionInsignia::getInsignia)
+            .filter(Objects::nonNull)
+            .toList();
+    }
+
+    public List<ProgresoMision> getHistorialMisiones() {
+        return historialMisiones;
     }
 
     public double getPorcentajeProgreso() {
@@ -76,7 +152,6 @@ public class PerfilDonante {
 
     public void subirCategoria() {
         if (categoria != null) {
-            // Corrección a avanzarASiguienteCategoria()
             categoria.avanzarASiguienteCategoria();
         }
     }
@@ -93,12 +168,11 @@ public class PerfilDonante {
         if (insigniaAResolver == null) return false;
 
         boolean yaOtorgada = insignias.stream()
-             .anyMatch(a -> a.getInsignia() != null && Objects.equals(a.getInsignia().getID(), insigniaAResolver.getID()));
+            .anyMatch(a -> a.getInsignia() != null && Objects.equals(a.getInsignia().getID(), insigniaAResolver.getID()));
 
         if (yaOtorgada) return false;
 
         insignias.add(new AsignacionInsignia(this, insigniaAResolver, LocalDate.now()));
-
         return true;
     }
 
@@ -106,26 +180,14 @@ public class PerfilDonante {
         if (misionActual == null) return null;
 
         return historialMisiones.stream()
-            .filter(p ->
-                Objects.equals(
-                    p.getMisionAsociada().getId(),
-                    misionActual.getId()
-                )
-            )
+            .filter(p -> p.getMisionAsociada() != null && Objects.equals(p.getMisionAsociada().getId(), misionActual.getId()))
             .findFirst()
             .orElse(null);
     }
 
-    public long getID() {
-        return donanteID;
-    }
-
     private void inicializarProgreso() {
         if (misionActual == null || getProgreso() != null) return;
-
-        historialMisiones.add(
-            new ProgresoMision(this, misionActual, LocalDate.now())
-        );
+        historialMisiones.add(new ProgresoMision(this, misionActual, LocalDate.now()));
     }
 
     public void sumarDonacion() {
@@ -143,27 +205,19 @@ public class PerfilDonante {
         this.racha.registrarDonacion(fechaNuevaDonacion);
     }
 
-    public String getCategoria() {
+    public String getCategoriaNombre() {
         return categoria != null ? categoria.getCategoria() : "Sin categoría";
-    }
-
-    public List<Insignia> getInsignias() {
-        return insignias.stream()
-                .map(AsignacionInsignia::getInsignia)
-                .filter(Objects::nonNull)
-                .toList();
     }
 
     public int getMisionesCompletadas() {
         return (int) historialMisiones.stream()
-                .filter(ProgresoMision::getCompletada)
-                .count();
+            .filter(ProgresoMision::getCompletada)
+            .count();
     }
 
     public void asignarMision(Mision mision) {
         this.misionActual = mision;
         inicializarProgreso();
     }
-
 }
 

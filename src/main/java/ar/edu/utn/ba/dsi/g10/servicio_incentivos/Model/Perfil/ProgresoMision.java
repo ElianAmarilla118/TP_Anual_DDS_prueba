@@ -1,18 +1,12 @@
 package ar.edu.utn.ba.dsi.g10.servicio_incentivos.Model.Perfil;
 
 import ar.edu.utn.ba.dsi.g10.servicio_incentivos.Model.Misiones.Mision;
-import lombok.Getter;
-import lombok.Setter;
-
+import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import jakarta.persistence.*;
-
-@Getter
-@Setter
 @Entity
 @Table(
     name = "historial_misiones",
@@ -68,6 +62,77 @@ public class ProgresoMision {
         this.fechaInicio = Objects.requireNonNull(fechaInicio);
     }
 
+    public ProgresoMision() {
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public PerfilDonante getPerfil() {
+        return perfil;
+    }
+
+    public void setPerfil(PerfilDonante perfil) {
+        this.perfil = perfil;
+    }
+
+    public Mision getMisionAsociada() {
+        return misionAsociada;
+    }
+
+    public void setMisionAsociada(Mision misionAsociada) {
+        this.misionAsociada = misionAsociada;
+    }
+
+    public double getProgresoActual() {
+        return progresoActual;
+    }
+
+    public void setProgresoActual(double progresoActual) {
+        this.progresoActual = progresoActual;
+    }
+
+    public List<DonacionImportada> getHistorialDonaciones() {
+        return historialDonaciones;
+    }
+
+    public void setHistorialDonaciones(List<DonacionImportada> historialDonaciones) {
+        this.historialDonaciones = historialDonaciones;
+    }
+
+    public LocalDate getFechaInicio() {
+        return fechaInicio;
+    }
+
+    public void setFechaInicio(LocalDate fechaInicio) {
+        this.fechaInicio = fechaInicio;
+    }
+
+    public LocalDate getFechaCompletado() {
+        return fechaCompletado;
+    }
+
+    public void setFechaCompletado(LocalDate fechaCompletado) {
+        this.fechaCompletado = fechaCompletado;
+    }
+
+    public boolean isCompletada() {
+        return completada;
+    }
+
+    public boolean getCompletada() {
+        return completada;
+    }
+
+    public void setCompletada(boolean completada) {
+        this.completada = completada;
+    }
+
     public void reiniciar() {
         historialDonaciones.clear();
         progresoActual = 0.0;
@@ -104,37 +169,11 @@ public class ProgresoMision {
         }
     }
 
-    /*
-    public void actualizar(DonacionImportada donacionImportada) {
-        if (completada) {
-            return;
-        }
-
-        if (donacionImportada == null || misionAsociada == null) {
-            return;
-        }
-
-        historialDonaciones.add(donacionImportada);
-
-        progresoActual = misionAsociada.calcularProgreso(
-            historialDonaciones
-        );
-
-        if (progresoActual >= 100.0) {
-            marcarCompletada();
-        }
-    }
-*/
     public void marcarCompletada() {
         completada = true;
         if (fechaCompletado == null) {
             fechaCompletado = LocalDate.now();
         }
     }
-
-    public boolean getCompletada() {
-        return completada;
-    }
-
 }
 

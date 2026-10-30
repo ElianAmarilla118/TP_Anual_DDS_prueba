@@ -1,34 +1,42 @@
 package ar.edu.utn.ba.dsi.g10.servicio_incentivos.Model.CategoriasDonante;
 
 import ar.edu.utn.ba.dsi.g10.servicio_incentivos.Model.Misiones.Mision;
-import lombok.Getter;
-import lombok.Setter;
-
-import java.beans.Transient;
+import jakarta.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import jakarta.persistence.*;
-
-@Getter
-@Setter
-@Embeddable //sus atributos se guardan en PerfilDonante, no tiene id ni tabla propia
+@Embeddable
 public class CategoriaDonante {
-
-    // Se agrego una asignación por defecto al declarar el atributo
 
     @Enumerated(EnumType.STRING)
     @Column(name = "categoria", nullable = false)
     private Categoria categoria = Categoria.COLABORADOR;
 
-    // no interviene en el progreso ni en la seleccion de misión. Las misiones son del catalogo y
-    // pertenecen a una categoria; no hace falta mantener otra lista dentro de cada donante
     @Transient
     private final List<Mision> misiones = new ArrayList<>();
 
-    // Constructor por defecto explícito
     public CategoriaDonante() {
         this.categoria = Categoria.COLABORADOR;
+    }
+
+    public Categoria getCategoriaEnum() {
+        return categoria;
+    }
+
+    public void setCategoria(Categoria categoria) {
+        this.categoria = categoria;
+    }
+
+    public Categoria getCategoriaObj() {
+        return categoria;
+    }
+
+    public String getCategoria() {
+        return (this.categoria != null) ? this.categoria.getNombre() : Categoria.COLABORADOR.getNombre();
+    }
+
+    public List<Mision> getMisiones() {
+        return misiones;
     }
 
     public void avanzarASiguienteCategoria() {
@@ -43,14 +51,7 @@ public class CategoriaDonante {
         }
     }
 
-    // 2. Control de nulos al obtener el nombre
-    public String getCategoria() {
-        //return categoria.getNombre();
-        return (this.categoria != null) ? this.categoria.getNombre() : Categoria.COLABORADOR.getNombre();
-    }
-
-    public void initCategoria(){
+    public void initCategoria() {
         this.categoria = Categoria.COLABORADOR;
     }
-
 }
