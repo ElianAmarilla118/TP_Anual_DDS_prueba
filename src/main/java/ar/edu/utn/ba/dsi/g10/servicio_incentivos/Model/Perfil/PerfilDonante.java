@@ -1,6 +1,7 @@
 package ar.edu.utn.ba.dsi.g10.servicio_incentivos.Model.Perfil;
 
 import ar.edu.utn.ba.dsi.g10.servicio_incentivos.Model.CategoriasDonante.CategoriaDonante;
+import ar.edu.utn.ba.dsi.g10.servicio_incentivos.Model.Misiones.AsignacionInsignia;
 import ar.edu.utn.ba.dsi.g10.servicio_incentivos.Model.Misiones.Insignia;
 import ar.edu.utn.ba.dsi.g10.servicio_incentivos.Model.Misiones.Mision;
 import lombok.Getter;
@@ -49,7 +50,7 @@ public class PerfilDonante {
         cascade = CascadeType.ALL,
         orphanRemoval = true
     )
-    private final List<Insignia> insignias = new ArrayList<>();
+    private final List<AsignacionInsignia> insignias = new ArrayList<>();
 
     @OneToMany(
         mappedBy = "perfil",
@@ -96,10 +97,7 @@ public class PerfilDonante {
 
         if (yaOtorgada) return false;
 
-         AsignacionInsignia nuevaAsignacion = new AsignacionInsignia(this, insigniaAResolver, LocalDate.now());
-        insignias.add(nuevaAsignacion);
-
-        insignias.add(insignia);
+        insignias.add(new AsignacionInsignia(this, insigniaAResolver, LocalDate.now()));
 
         return true;
     }
@@ -150,11 +148,11 @@ public class PerfilDonante {
     }
 
     public List<Insignia> getInsignias() {
-    return insignias.stream()
-            .map(AsignacionInsignia::getInsignia)
-            .filter(Objects::nonNull)
-            .toList();
-}
+        return insignias.stream()
+                .map(AsignacionInsignia::getInsignia)
+                .filter(Objects::nonNull)
+                .toList();
+    }
 
     public int getMisionesCompletadas() {
         return (int) historialMisiones.stream()
