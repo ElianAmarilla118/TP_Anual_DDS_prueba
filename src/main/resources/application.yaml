@@ -3,8 +3,8 @@ spring:
     name: servicio_incentivos
 
   datasource:
-    # 🟢 Forzamos el host externo regional completo con encriptación SSL nativa de PostgreSQL
-    url: jdbc:postgresql://incentivos_db_ulcg_user:X3tP4YzJQc4tDzwA63WAUJ4zfBXxTWqD@dpg-dbhvh6uc6qcc73f3htvg-a.oregon-postgres.render.com/incentivos_db_ulcg?ssl=true&sslmode=require
+    
+    url: 
     username: ${DATABASE_USERNAME}
     password: ${DATABASE_PASSWORD}
     driver-class-name: org.postgresql.Driver
