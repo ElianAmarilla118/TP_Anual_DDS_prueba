@@ -1,11 +1,10 @@
-# servicio_incentivos/src/main/resources/application.yaml
 spring:
   application:
     name: servicio_incentivos
 
   datasource:
-    # 🟢 Concatenamos los flags de SSL requeridos por la infraestructura de Render
-    url: jdbc:postgresql://${DATABASE_HOST}:5432/${DATABASE_NAME}?ssl=true&sslmode=require
+    # 🟢 Forzamos el host externo regional completo con encriptación SSL nativa de PostgreSQL
+    url: jdbc:postgresql://incentivos_db_ulcg_user:X3tP4YzJQc4tDzwA63WAUJ4zfBXxTWqD@dpg-dbhvh6uc6qcc73f3htvg-a.oregon-postgres.render.com/incentivos_db_ulcg?ssl=true&sslmode=require
     username: ${DATABASE_USERNAME}
     password: ${DATABASE_PASSWORD}
     driver-class-name: org.postgresql.Driver
@@ -13,12 +12,11 @@ spring:
       maximum-pool-size: 4
       minimum-idle: 1
       idle-timeout: 30000
-      connection-timeout: 20000
+      connection-timeout: 30000
 
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
-      # Sincroniza las tablas físicas de DonaTrack de forma automática en Render
       ddl-auto: update
     show-sql: false
 
