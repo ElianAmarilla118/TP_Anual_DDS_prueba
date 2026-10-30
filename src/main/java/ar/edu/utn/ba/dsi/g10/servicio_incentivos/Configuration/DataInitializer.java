@@ -1,7 +1,7 @@
 package ar.edu.utn.ba.dsi.g10.servicio_incentivos.Configuration;
 
-import ar.edu.utn.ba.dsi.g10.servicio_incentivos.Model.CatalogoMisiones;
 import ar.edu.utn.ba.dsi.g10.servicio_incentivos.Model.CategoriasDonante.CategoriaDonante;
+import ar.edu.utn.ba.dsi.g10.servicio_incentivos.Model.Misiones.CatalogoMisiones;
 import ar.edu.utn.ba.dsi.g10.servicio_incentivos.Model.Misiones.MisionDonacionesExitosas;
 import ar.edu.utn.ba.dsi.g10.servicio_incentivos.Model.Perfil.PerfilDonante;
 import ar.edu.utn.ba.dsi.g10.servicio_incentivos.Repository.RepositorioPerfiles;
