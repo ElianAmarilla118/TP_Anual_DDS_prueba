@@ -1,10 +1,11 @@
+# servicio_incentivos/src/main/resources/application.yaml
 spring:
   application:
     name: servicio_incentivos
 
   datasource:
-    # 🟢 Reconstruye la URL de red privada interna usando el protocolo JDBC nativo de Java
-    url: jdbc:postgresql://${DATABASE_HOST}:5432/${DATABASE_NAME}
+    # 🟢 Concatenamos los flags de SSL requeridos por la infraestructura de Render
+    url: jdbc:postgresql://${DATABASE_HOST}:5432/${DATABASE_NAME}?ssl=true&sslmode=require
     username: ${DATABASE_USERNAME}
     password: ${DATABASE_PASSWORD}
     driver-class-name: org.postgresql.Driver
@@ -17,7 +18,7 @@ spring:
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
-      # Sincroniza dinámicamente las entidades en el esquema relacional de Render
+      # Sincroniza las tablas físicas de DonaTrack de forma automática en Render
       ddl-auto: update
     show-sql: false
 
