@@ -1,36 +1,24 @@
-# servicio_incentivos/src/main/resources/application.yaml
 spring:
   application:
     name: servicio_incentivos
 
   datasource:
-    # URL de conexión a PostgreSQL provista por Render
-    url: ${DATABASE_URL}
+    # 🟢 Forzamos a que lea la variable custom mapeada con el protocolo correcto de Java
+    url: ${SPRING_JDBC_URL}
     username: ${DATABASE_USERNAME}
     password: ${DATABASE_PASSWORD}
     driver-class-name: org.postgresql.Driver
-    # Configuración del Pool de conexiones Hikari para producción
     hikari:
-      maximum-pool-size: 10
-      minimum-idle: 2
+      maximum-pool-size: 4
+      minimum-idle: 1
       idle-timeout: 30000
       connection-timeout: 20000
 
   jpa:
-    # Dialecto específico nativo para PostgreSQL de Hibernate
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
-      # Sincroniza automáticamente las entidades del modelo hacia PostgreSQL en Render
       ddl-auto: update
     show-sql: false
-    properties:
-      hibernate:
-        format_sql: true
-        jdbc:
-          batch_size: 25
 
 server:
-  # Render inyecta dinámicamente el puerto; por defecto se expone en el 8080 local del contenedor
   port: ${PORT:8080}
-  servlet:
-    context-path: /
