@@ -131,13 +131,19 @@ public class ServicioIncentivos {
             return;
         }
 
-        repo.actualizarRankingPerfil(perfilDonante);
+       // repo.actualizarRankingPerfil(perfilDonante);
+         this.guardarPerfil(perfilDonante);
+
+         enviarInsigniaAN8N(perfilDonante);
+
 
         enviarInsigniaAN8N(perfilDonante);
     }
 
     public List<PosicionRanking> getRanking(int tamaño) {
-        return repo.obtenerRankingMensual(tamaño);
+           return repo.obtenerRankingMensualNativo().stream()
+            .limit(tamaño)
+            .toList();
     }
 
 

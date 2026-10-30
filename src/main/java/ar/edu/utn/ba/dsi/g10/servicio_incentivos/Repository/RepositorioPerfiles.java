@@ -3,16 +3,14 @@ package ar.edu.utn.ba.dsi.g10.servicio_incentivos.Repository;
 
 import ar.edu.utn.ba.dsi.g10.servicio_incentivos.Model.Perfil.PerfilDonante;
 import ar.edu.utn.ba.dsi.g10.servicio_incentivos.Model.Ranking.PosicionRanking;
-import ar.edu.utn.ba.dsi.g10.servicio_incentivos.Model.Ranking.RankingPerfil;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
 @Repository
 public interface RepositorioPerfiles extends JpaRepository<PerfilDonante, Long> {
-
-    RankingPerfil RANKING = new RankingPerfil();
 
     default PerfilDonante getxId(long donanteId) {
         return findById(donanteId).orElse(null);
@@ -32,19 +30,16 @@ public interface RepositorioPerfiles extends JpaRepository<PerfilDonante, Long> 
         return false;
     }
 
-    default void actualizarRankingPerfil(PerfilDonante perfil) {
-        if (perfil != null) {
-            RANKING.actualizarPerfil(perfil);
-        }
-    }
-
-    default List<PosicionRanking> obtenerRankingMensual(int tamaño) {
-        return RANKING.getPosicionesHistoricas().stream()
-            .limit(tamaño)
-            .toList();
-    }
-
-    default void reiniciarRankingMensual() {
-        RANKING.reiniciarRanking();
-    }
+    /**
+     * 🟢 Reemplazo Relacional Nativo de tu Ranking de misiones completadas.
+     * En lugar de acumular en listas en memoria, calcula en tiempo real contando las 
+     * misiones completas registradas en la base de datos PostgreSQL de Render.
+     */
+    @Query("SELECT new ar.edu.utn.ba.dsi.g10.servicio_incentivos.Model.Ranking.PosicionRanking(" +
+           "p.donanteID, CAST(COUNT(hm) AS int)) " +
+           "FROM PerfilDonante p JOIN p.historialMisiones hm " +
+           "WHERE hm.completada = true " +
+           "GROUP BY p.donanteID " +
+           "ORDER BY COUNT(hm) DESC")
+    List<PosicionRanking> obtenerRankingMensualNativo();
 }

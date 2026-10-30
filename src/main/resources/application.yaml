@@ -3,7 +3,6 @@ spring:
     name: servicio_incentivos
 
   datasource:
-    # 🟢 Forzamos el host estático interno agregando explícitamente el parámetro de conexión SSL
     url: jdbc:postgresql://dpg-dbvh6uc6qcc73f3htvg-a:5432/incentivos_db_ulcg?ssl=true&sslmode=require
     username: ${DATABASE_USERNAME}
     password: ${DATABASE_PASSWORD}
@@ -11,8 +10,6 @@ spring:
     hikari:
       maximum-pool-size: 4
       minimum-idle: 1
-      idle-timeout: 30000
-      connection-timeout: 20000
 
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
