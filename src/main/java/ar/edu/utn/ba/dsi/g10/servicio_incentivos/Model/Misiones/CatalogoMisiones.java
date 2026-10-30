@@ -2,6 +2,7 @@ package ar.edu.utn.ba.dsi.g10.servicio_incentivos.Model.Misiones;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ar.edu.utn.ba.dsi.g10.servicio_incentivos.Model.Misiones.MisionDonacionesExitosas;
 
 @Service
 @Transactional(readOnly = true)
@@ -35,4 +36,17 @@ public class CatalogoMisiones {
 
     return mision;
   }
+
+  public MisionDonacionesExitosas crearMisionDonacionesExitosasInicial() {
+
+    MisionDonacionesExitosas mision =
+        new MisionDonacionesExitosas();
+
+    mision.setNombre("Donador Frecuente");
+    mision.setDescripcion("Realizar donaciones exitosas");
+    mision.setDonacionesExitosasRequeridas(5.0);
+
+    return mision;
+  }
+
 }
