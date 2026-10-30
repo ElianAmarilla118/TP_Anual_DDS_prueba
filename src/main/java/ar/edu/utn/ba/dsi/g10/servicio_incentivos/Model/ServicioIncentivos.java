@@ -213,7 +213,7 @@ public void reiniciarRanking() { // CAMBIA EL CORCHETE/LLAVE POR ESTA LLAVE DE A
     }
 
 
-public void procesarConfirmacionIncentivos(MensajeConfirmacionIncentivosDTO dto) {
+public void procesarConfirmacionIncentivos(ar.edu.utn.ba.dsi.g10.servicio_incentivos.Model.DTO.Integracion.MensajeConfirmacionIncentivosDTO dto) {
     if (dto == null || dto.getIdDonantesIncluidos() == null) {
         return;
     }
@@ -223,19 +223,17 @@ public void procesarConfirmacionIncentivos(MensajeConfirmacionIncentivosDTO dto)
         if (donanteId == null) continue;
 
         DonacionImportada donacion = new DonacionImportada();
-        // Mapeamos los datos simulando la donación que se completó con éxito en la ruta
         donacion.setDonacionId(dto.getIdAsignada() != null ? dto.getIdAsignada() : 0L);
         donacion.setDonanteId(donanteId);
-        donacion.setCantidadDonada(1); // Valor base representativo del impacto de entrega
+        donacion.setCantidadDonada(1); // Valor base representativo
         donacion.setCategoria("General");
-        donacion.setExitosa(true); // ¡Crucial! Es una entrega confirmada
+        donacion.setExitosa(true); // Indispensable para las misiones de volumen/éxito
         donacion.setFechaDonacion(java.time.LocalDate.now());
 
-        // Invocamos a tu lógica de negocio core existente
+        // Invocamos la lógica core nativa que maneja la persistencia en tu repo relacional
         this.procesarNuevaDonacion(donanteId, donacion);
     }
 }
-
 
 
 
