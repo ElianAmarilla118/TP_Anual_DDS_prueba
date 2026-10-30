@@ -3,17 +3,21 @@ spring:
     name: servicio_incentivos
 
   datasource:
-    url: jdbc:postgresql://dpg-dbvh6uc6qcc73f3htvg-a:5432/incentivos_db_ulcg?ssl=true&sslmode=require
+    # 🟢 Reconstruye la URL de red privada interna usando el protocolo JDBC nativo de Java
+    url: jdbc:postgresql://${DATABASE_HOST}:5432/${DATABASE_NAME}
     username: ${DATABASE_USERNAME}
     password: ${DATABASE_PASSWORD}
     driver-class-name: org.postgresql.Driver
     hikari:
       maximum-pool-size: 4
       minimum-idle: 1
+      idle-timeout: 30000
+      connection-timeout: 20000
 
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
+      # Sincroniza dinámicamente las entidades en el esquema relacional de Render
       ddl-auto: update
     show-sql: false
 
