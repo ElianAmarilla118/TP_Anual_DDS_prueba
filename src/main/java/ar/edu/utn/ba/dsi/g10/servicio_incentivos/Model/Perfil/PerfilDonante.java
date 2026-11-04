@@ -1,6 +1,7 @@
 package ar.edu.utn.ba.dsi.g10.servicio_incentivos.Model.Perfil;
 
 import ar.edu.utn.ba.dsi.g10.servicio_incentivos.Model.CategoriasDonante.CategoriaDonante;
+import ar.edu.utn.ba.dsi.g10.servicio_incentivos.Model.DTO.Integracion.DonanteDTO;
 import ar.edu.utn.ba.dsi.g10.servicio_incentivos.Model.Misiones.AsignacionInsignia;
 import ar.edu.utn.ba.dsi.g10.servicio_incentivos.Model.Misiones.Insignia;
 import ar.edu.utn.ba.dsi.g10.servicio_incentivos.Model.Misiones.Mision;
@@ -18,6 +19,9 @@ public class PerfilDonante {
     @Column(name = "donante_id")
     private long donanteID;
 
+    @OneToOne
+    private DatosDonante datosDonante;
+
     @Version
     private Long version;
 
@@ -27,6 +31,8 @@ public class PerfilDonante {
     @Column(name = "total_donaciones_historicas", nullable = false)
     private int totalDonacionesHistoricas;
 
+
+    // lista ids
     @Column(name = "total_organizaciones_ayudadas", nullable = false)
     private int totalOrganizacionesAyudadas;
 
@@ -149,6 +155,15 @@ public class PerfilDonante {
         ProgresoMision progreso = getProgreso();
         return progreso == null ? 0.0 : progreso.getProgresoActual();
     }
+
+    public void setDatosDonante(DatosDonante datosDonante) {
+        this.datosDonante = datosDonante;
+    }
+    public getDatosDonante() {
+        return datosDonante;
+    }
+
+
 
     public void subirCategoria() {
         if (categoria != null) {

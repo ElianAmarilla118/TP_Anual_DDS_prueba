@@ -1,5 +1,6 @@
 package ar.edu.utn.ba.dsi.g10.servicio_incentivos.Model.CategoriasDonante;
 
+// verificar donde se usa este archivo y borrarlo 
 public enum Categoria {
     COLABORADOR,
     SOSTENEDOR,

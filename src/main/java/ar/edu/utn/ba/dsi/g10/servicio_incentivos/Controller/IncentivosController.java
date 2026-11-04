@@ -2,6 +2,7 @@ package ar.edu.utn.ba.dsi.g10.servicio_incentivos.Controller;
 
 import ar.edu.utn.ba.dsi.g10.servicio_incentivos.Model.Misiones.Insignia;
 import ar.edu.utn.ba.dsi.g10.servicio_incentivos.Model.Misiones.Mision;
+import ar.edu.utn.ba.dsi.g10.servicio_incentivos.Model.Perfil.DatosDonante;
 import ar.edu.utn.ba.dsi.g10.servicio_incentivos.Model.Perfil.DonacionImportada;
 import ar.edu.utn.ba.dsi.g10.servicio_incentivos.Model.Perfil.PerfilDonante;
 import ar.edu.utn.ba.dsi.g10.servicio_incentivos.Model.Perfil.ProgresoMision;
@@ -10,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import ar.edu.utn.ba.dsi.g10.servicio_incentivos.Model.ServicioIncentivos;
 import ar.edu.utn.ba.dsi.g10.servicio_incentivos.Model.DTO.MisionResponseDTO;
 import ar.edu.utn.ba.dsi.g10.servicio_incentivos.Model.DTO.PosicionRankingDTO;
+import ar.edu.utn.ba.dsi.g10.servicio_incentivos.Model.DTO.Integracion.DonanteDTO;
 import ar.edu.utn.ba.dsi.g10.servicio_incentivos.Model.DTO.Integracion.MensajeConfirmacionIncentivosDTO;
 import ar.edu.utn.ba.dsi.g10.servicio_incentivos.Model.DTO.PerfilMetricasDTO;
 import ar.edu.utn.ba.dsi.g10.servicio_incentivos.Model.DTO.InsigniaResponseDTO;
@@ -179,9 +181,9 @@ public ResponseEntity<?> obtenerRankingMensual(){
     // crear perfil propuesto
     @PostMapping("/perfiles")
     public ResponseEntity<String> crearPerfil(
-        @RequestBody CrearPerfilRequest datos
+        @RequestBody DonanteDTO datos
     ) {
-        Long donanteID = datos.donanteID();
+        Long donanteID = datos.getId();
 
         if (donanteID == null || donanteID <= 0) {
             return ResponseEntity
@@ -229,7 +231,7 @@ public ResponseEntity<?> obtenerRankingMensual(){
     @PutMapping("/perfiles/{donanteId}")
     public ResponseEntity<String> actualizarPerfil(
             @PathVariable Long donanteId,
-            @RequestBody PerfilDonante perfilActualizado) {
+            @RequestBody DonanteDTO perfilActualizado) {
 
         PerfilDonante existente = servicio.getMetricas(donanteId);
         if (existente == null) {
@@ -237,6 +239,14 @@ public ResponseEntity<?> obtenerRankingMensual(){
         }
 
         perfilActualizado.setDonanteID(donanteId); // Asegura que conserve el ID de la URL
+        
+        repo.buscarPorId(donanteId).ifPresent(perfil -> {
+           perfil.setDatosDonante(new DatosDonante(
+                perfilActualizado.getNombre(),
+                perfilActualizado.getDonaciones(),
+                perfilActualizado.getContactoPredeterminado()
+            ));
+        });
         servicio.guardarPerfil(perfilActualizado);
 
         return ResponseEntity.ok("Perfil actualizado correctamente");

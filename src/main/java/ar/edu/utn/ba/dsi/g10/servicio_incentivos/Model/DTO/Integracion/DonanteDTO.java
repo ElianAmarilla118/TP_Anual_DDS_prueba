@@ -1,5 +1,6 @@
 package ar.edu.utn.ba.dsi.g10.servicio_incentivos.Model.DTO.Integracion;
 
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,6 +14,10 @@ import java.util.List;
 @NoArgsConstructor
 public class DonanteDTO {
     private Long id;
+    private String nombre;
+    @OneToMany(mappedBy = "donante", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private List<DonacionDTO> donaciones;
-    private Object contactoPredeterminado;
+
+    @OneToOne
+    private MedioContactoDTO contactoPredeterminado;
 }

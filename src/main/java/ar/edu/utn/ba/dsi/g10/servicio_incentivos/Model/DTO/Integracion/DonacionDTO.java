@@ -5,17 +5,29 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-@Getter
-@Setter
+import ar.edu.utn.ba.dsi.g10.servicio_incentivos.Model.CategoriasDonante.Categoria;
+
 @AllArgsConstructor
 @NoArgsConstructor
+@Getter
+@Setter
+@Entity
 public class DonacionDTO {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private Date fechaEntrada;
-    private List<Object> categoriasIncluidas; // o List<String> / DTO si solo precisan el nombre
+    private Date fechaEntrada = new Date();
+    @OneToMany(mappedBy = "donante", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    private List<String> categoriasIncluidas = new ArrayList<>();
     private Integer cantBienes;
-    private Integer cantidadSegmentadasEntregadas;
+    private List<Long> segmentadasIncluidas;
+    private DonanteDTO donante;
+
+    public Integer cantidadSegmentadasEntregadas() {
+        return segmentadasIncluidas.size();
+    }
 }

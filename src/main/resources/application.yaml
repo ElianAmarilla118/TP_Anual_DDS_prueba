@@ -22,3 +22,7 @@ spring:
 
 server:
   port: ${PORT:8080}
+
+conexiones:
+  cola-de-mensajes: ${COLA_DE_MENSAJES:http://localhost:8081}
+   

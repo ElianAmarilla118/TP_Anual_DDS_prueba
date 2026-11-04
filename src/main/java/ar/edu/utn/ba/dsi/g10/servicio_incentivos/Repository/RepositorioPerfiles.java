@@ -12,16 +12,20 @@ import java.util.List;
 @Repository
 public interface RepositorioPerfiles extends JpaRepository<PerfilDonante, Long> {
 
+    @Transactional
     default PerfilDonante getxId(long donanteId) {
         return findById(donanteId).orElse(null);
     }
 
+
+    @Transactional
     default void guardar(PerfilDonante perfil) {
         if (perfil != null) {
             save(perfil);
         }
     }
 
+    @Transactional
     default boolean eliminar(long donanteId) {
         if (existsById(donanteId)) {
             deleteById(donanteId);
@@ -31,7 +35,7 @@ public interface RepositorioPerfiles extends JpaRepository<PerfilDonante, Long> 
     }
 
     /**
-     * 🟢 Reemplazo Relacional Nativo de tu Ranking de misiones completadas.
+     * Obtiene el ranking mensual de donantes basado en la cantidad de misiones completadas.
      * En lugar de acumular en listas en memoria, calcula en tiempo real contando las 
      * misiones completas registradas en la base de datos PostgreSQL de Render.
      */

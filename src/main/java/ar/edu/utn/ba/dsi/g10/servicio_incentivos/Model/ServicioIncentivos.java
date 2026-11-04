@@ -12,6 +12,9 @@ import ar.edu.utn.ba.dsi.g10.servicio_incentivos.Model.Misiones.CatalogoMisiones
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+
+
+import ar.edu.utn.ba.dsi.g10.servicio_incentivos.Model.Perfil.DatosDonante;
 import ar.edu.utn.ba.dsi.g10.servicio_incentivos.Model.Misiones.Insignia;
 import ar.edu.utn.ba.dsi.g10.servicio_incentivos.Model.Misiones.Mision;
 import ar.edu.utn.ba.dsi.g10.servicio_incentivos.Model.Perfil.DonacionImportada;
@@ -29,18 +32,27 @@ import org.springframework.scheduling.annotation.Scheduled;
 import java.util.List;
 >>>>>>> d1de2abbcb740c34e73ef770a5a6216c902a9c8d
 */
+
+
+
 @Service
 public class ServicioIncentivos {
     private final RepositorioPerfiles repo;
     private final CatalogoMisiones catalogoMisiones;
     private final DonacionMapper donacionMapper; // 1. Inyección del Mapper
 
+   
+    private final RestClient restClientMensajes;
+
+
     public ServicioIncentivos(RepositorioPerfiles repo,
                               CatalogoMisiones catalogoMisiones,
-                              DonacionMapper donacionMapper) { // 2. Constructor actualizado
+                              DonacionMapper donacionMapper,
+                               @Qualifier("restClientMensajes") RestClient restClientMensajes) { // 2. Constructor actualizado
         this.repo = repo;
         this.catalogoMisiones = catalogoMisiones;
         this.donacionMapper = donacionMapper;
+        this.restClientMensajes = restClientMensajes;
     }
 
     // 3. Nuevo método para ser llamado desde IncentivosController recibiendo el DTO
@@ -132,9 +144,22 @@ public class ServicioIncentivos {
         }
 
        // repo.actualizarRankingPerfil(perfilDonante);
-         this.guardarPerfil(perfilDonante);
+        this.guardarPerfil(perfilDonante);
+        
 
-         enviarInsigniaAN8N(perfilDonante);
+        restClientMensajes
+                .post()
+                .uri("/mensajes")
+                .body(new NotificacionRequestDTO(tipoNotificacion, "Notificacion de mision", "Mision Completada", new DestinatarioRequestDTO(
+                    perfilDonante.getDatosDonante().getNombre(),
+                    perfilDonante.getDatosDonante().getContactoPredeterminado().getTelefono(),
+                    perfilDonante.getDatosDonante().getContactoPredeterminado().getCorreo(),
+                    perfilDonante.getDatosDonante().getContactoPredeterminado().getTelefono()),
+                    TipoEvento.MISION_COMPLETADA.toString()))
+                .retrieve()
+                .toBodilessEntity();
+    
+            
 
 
         enviarInsigniaAN8N(perfilDonante);
@@ -149,9 +174,23 @@ public class ServicioIncentivos {
 
     private void verificarSubidaCategoria(PerfilDonante perfilDonante) {
         if (perfilDonante != null && perfilDonante.getPorcentajeProgreso() >= 100.0) {
-            perfilDonante.subirCategoria(); // Eleva la categoría[cite: 12, 22]
+            perfilDonante.subirCategoria();// Eleva la categoría[cite: 12, 22]
+                restClientMensajes
+                .post()
+                .uri("/mensajes")
+                .body(new NotificacionRequestDTO(tipoNotificacion, "Notificacion de categoria", "Subida de categoria", new DestinatarioRequestDTO(
+                    perfilDonante.getDatosDonante().getNombre(),
+                    perfilDonante.getDatosDonante().getContactoPredeterminado().getTelefono(),
+                    perfilDonante.getDatosDonante().getContactoPredeterminado().getCorreo(),
+                    perfilDonante.getDatosDonante().getContactoPredeterminado().getTelefono()),
+                    TipoEvento.CATEGORIA_SUBIDA.toString()))
+                .retrieve()
+                .toBodilessEntity();
+    
         }
     }
+
+
 
     private PerfilDonante obtenerPerfil(long donanteID) {
         return repo != null ? repo.getxId(donanteID) : null;
@@ -169,26 +208,40 @@ public class ServicioIncentivos {
             perfil.getHistorialMisiones().add(nuevoProgreso);
         }
     }
-/*@Scheduled(cron = "0 59 23 L * ?")
-public void reiniciarRanking() { // CAMBIA EL CORCHETE/LLAVE POR ESTA LLAVE DE APERTURA
+
+
+    //revisar cron
+    @Transactional
+    @Scheduled(cron = "0 59 23 L * ?")
+    public void reiniciarRanking() { // CAMBIA EL CORCHETE/LLAVE POR ESTA LLAVE DE APERTURA
     repo.reiniciarRankingMensual();
-    System.out.println("Se ha reinventado el ranking mensual exitosamente.");
-}*/
+    System.out.println("Se ha reinventado el ranking mensual exitosamente.");   
+    }
+
+    //reiniciarRanking() manual
+
+
     public void guardarPerfil(PerfilDonante perfil) {
         repo.guardar(perfil);
     }
+
 
     public boolean eliminarPerfil(long donanteId) {
         return repo.eliminar(donanteId);
     }
 
-    public PerfilDonante crearPerfil(long donanteID) {
+
+    @Transactional
+    public PerfilDonante crearPerfil(DonanteDTO donanteDTO) {
         CategoriaDonante categoriaInicial = new CategoriaDonante();
+
+        DatosDonante datosDonante = new DatosDonante(donanteDTO.getNombre(), donanteDTO.getDonaciones(), donanteDTO.getContactoPredeterminado() );
 
         Mision misionInicial = catalogoMisiones.obtenerPrimeraMision();
 
         PerfilDonante nuevoPerfil = new PerfilDonante(
-            donanteID,
+            donanteDTO.getId(),
+            datosDonante,
             categoriaInicial,
             misionInicial
         );
@@ -198,15 +251,24 @@ public void reiniciarRanking() { // CAMBIA EL CORCHETE/LLAVE POR ESTA LLAVE DE A
         return nuevoPerfil;
     }
 
+
+    @Transactional
     public PerfilDonante crearPerfilDesdeDTO(DonanteDTO donanteDTO) {
         if (donanteDTO == null || donanteDTO.getId() == null) {
             return null;
         }
 
         Long donanteId = donanteDTO.getId();
+        
+        DatosDonante datosDonante = new DatosDonante(
+            donanteDTO.getNombre(),
+            donanteDTO.getDonaciones(),
+            donanteDTO.getContactoPredeterminado()
+        );
 
         // 1. Crear el perfil inicial con su categoría y primera misión
         PerfilDonante nuevoPerfil = crearPerfil(donanteId);
+        nuevoPerfil.setDatosDonante(datosDonante);
 
         // 2. Si el DTO de donaciones trae historial previo, lo procesamos
         if (donanteDTO.getDonaciones() != null && !donanteDTO.getDonaciones().isEmpty()) {
@@ -228,6 +290,8 @@ public void procesarConfirmacionIncentivos(ar.edu.utn.ba.dsi.g10.servicio_incent
     for (Long donanteId : dto.getIdDonantesIncluidos()) {
         if (donanteId == null) continue;
 
+
+        //hardcodeo mal
         DonacionImportada donacion = new DonacionImportada();
         donacion.setDonacionId(dto.getIdAsignada() != null ? dto.getIdAsignada() : 0L);
         donacion.setDonanteId(donanteId);
