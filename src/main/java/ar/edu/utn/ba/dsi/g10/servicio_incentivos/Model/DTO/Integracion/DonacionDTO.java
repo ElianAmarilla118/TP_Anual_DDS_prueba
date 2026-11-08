@@ -24,7 +24,7 @@ public class DonacionDTO {
     @OneToMany(mappedBy = "donante", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private List<String> categoriasIncluidas = new ArrayList<>();
     private Integer cantBienes;
-    private List<Long> segmentadasIncluidas;
+    private List<Long> segmentadasIncluidas; //SOLO las IDs de las segmentadas. AUN no entregadas.
     private DonanteDTO donante;
 
     public Integer cantidadSegmentadasEntregadas() {

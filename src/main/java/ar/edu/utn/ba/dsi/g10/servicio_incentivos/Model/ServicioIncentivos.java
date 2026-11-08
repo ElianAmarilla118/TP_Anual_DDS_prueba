@@ -57,16 +57,20 @@ public class ServicioIncentivos {
 
     // 3. Nuevo método para ser llamado desde IncentivosController recibiendo el DTO
     public void procesarNuevaDonacionDTO(long donanteID, DonacionDTO donacionDTO) {
+        //#1: REVISAR CATEGORIAS... RESOLVED: Cambios en: DonacionImportada, DonacionMapper, DonacionDTO, ServicioIncentivos añadiendo vectores de categorias. Cambio en el calculoProgreso de completitud. 
         DonacionImportada donacion = donacionMapper.aDonacionImportada(donacionDTO, donanteID);
         this.procesarNuevaDonacion(donanteID, donacion);
     }
+
+    //
 
     public void procesarNuevaDonacion(long donanteID, DonacionImportada donacion) {
         PerfilDonante perfilAsociado = obtenerPerfil(donanteID);
         if (perfilAsociado == null || donacion == null) {
             return;
         }
-
+         
+        //Esto esta mal, revisar. #6
         perfilAsociado.sumarDonacion();
         // Evalúa racha mensual del donante
         perfilAsociado.verificarRachaDonaciones(donacion.getFechaDonacion());
@@ -86,7 +90,16 @@ public class ServicioIncentivos {
     }
 
     public void procesarDonacionEntregada(long donanteID, DonacionImportada donacion) {
-        procesarNuevaDonacion(donanteID, donacion);
+        //#2: Viene del broker.
+        // Ahora mismo, los progresos de las misiones se verifican con las donaciones obtenidas del servicio de donaciones, no con las entregadas. Revisar logica de negocio en general del tp. TODO: #1. 
+
+        PerfilDonante perfilAsociado = obtenerPerfil(donanteID);
+        if (perfilAsociado == null || donacion == null) {  
+            return;
+        }
+        else {
+            //ProgresoMision(o no)... Cargar datos.. etc. 
+        }
     }
 
     public Mision getMisionActual(long donanteID) {
@@ -151,10 +164,10 @@ public class ServicioIncentivos {
                 .post()
                 .uri("/mensajes")
                 .body(new NotificacionRequestDTO(tipoNotificacion, "Notificacion de mision", "Mision Completada", new DestinatarioRequestDTO(
-                    perfilDonante.getDatosDonante().getNombre(),
-                    perfilDonante.getDatosDonante().getContactoPredeterminado().getTelefono(),
-                    perfilDonante.getDatosDonante().getContactoPredeterminado().getCorreo(),
-                    perfilDonante.getDatosDonante().getContactoPredeterminado().getTelefono()),
+                    perfilDonante.getNombre(),
+                    perfilDonante.getContactoPredeterminado().getTelefono(),
+                    perfilDonante.getContactoPredeterminado().getCorreo(),
+                    perfilDonante.getContactoPredeterminado().getTelefono()),
                     TipoEvento.MISION_COMPLETADA.toString()))
                 .retrieve()
                 .toBodilessEntity();

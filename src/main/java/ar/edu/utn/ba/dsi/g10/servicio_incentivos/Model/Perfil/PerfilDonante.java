@@ -1,10 +1,12 @@
 package ar.edu.utn.ba.dsi.g10.servicio_incentivos.Model.Perfil;
 
 import ar.edu.utn.ba.dsi.g10.servicio_incentivos.Model.CategoriasDonante.CategoriaDonante;
+import ar.edu.utn.ba.dsi.g10.servicio_incentivos.Model.DTO.Integracion.DonacionAsignadaDTO;
 import ar.edu.utn.ba.dsi.g10.servicio_incentivos.Model.DTO.Integracion.DonanteDTO;
 import ar.edu.utn.ba.dsi.g10.servicio_incentivos.Model.Misiones.AsignacionInsignia;
 import ar.edu.utn.ba.dsi.g10.servicio_incentivos.Model.Misiones.Insignia;
 import ar.edu.utn.ba.dsi.g10.servicio_incentivos.Model.Misiones.Mision;
+import ar.edu.utn.ba.dsi.g10.servicio_incentivos.Model.DTO.Integracion.medioContacto;
 import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -19,9 +21,13 @@ public class PerfilDonante {
     @Column(name = "donante_id")
     private long donanteID;
 
-    @OneToOne
-    private DatosDonante datosDonante;
+   // @OneToOne
+   // private DatosDonante datosDonante; //DatosDonant es redundante, pongo medioContacto
 
+    private medioContacto contactoPredeterminado;
+
+    private String nombre;
+    
     @Version
     private Long version;
 
@@ -31,6 +37,7 @@ public class PerfilDonante {
     @Column(name = "total_donaciones_historicas", nullable = false)
     private int totalDonacionesHistoricas;
 
+    private List<OrganizacionAyudada> organizacionesAyudadas;
 
     // lista ids
     @Column(name = "total_organizaciones_ayudadas", nullable = false)
@@ -56,6 +63,7 @@ public class PerfilDonante {
     )
     @OrderBy("id ASC")
     private final List<ProgresoMision> historialMisiones = new ArrayList<>();
+
 
     public PerfilDonante() {
     }
@@ -104,22 +112,24 @@ public class PerfilDonante {
         return categoria != null ? categoria.getCategoria() : "Sin categoría";
     }
 
-    public int getTotalDonacionesHistoricas() {
-        return totalDonacionesHistoricas;
-    }
-
-    public void setTotalDonacionesHistoricas(int totalDonacionesHistoricas) {
-        this.totalDonacionesHistoricas = totalDonacionesHistoricas;
-    }
-
+  
     public int getTotalOrganizacionesAyudadas() {
-        return totalOrganizacionesAyudadas;
+        return organizacionesAyudadas != null ? organizacionesAyudadas.size() : 0; //tiene mas sentido que sea la lista de las organizaciones ayudadas, revisar como fuciona.
     }
 
     public void setTotalOrganizacionesAyudadas(int totalOrganizacionesAyudadas) {
+        //este seteo es unicamente de iniciaizacion. 
         this.totalOrganizacionesAyudadas = totalOrganizacionesAyudadas;
     }
 
+    public void actualizarTotalOrganizacionesAyudadas() {
+        if (organizacionesAyudadas != null) {
+            this.totalOrganizacionesAyudadas = organizacionesAyudadas.size();
+        } else {
+            this.totalOrganizacionesAyudadas = 0;
+        }
+    }
+    
     public Mision getMisionActual() {
         return misionActual;
     }
@@ -159,11 +169,16 @@ public class PerfilDonante {
     public void setDatosDonante(DatosDonante datosDonante) {
         this.datosDonante = datosDonante;
     }
+
+    /* 
     public getDatosDonante() {
         return datosDonante;
     }
+    */
 
-
+    public medioContacto getContactoPredeterminado() {
+        return contactoPredeterminado;
+    }
 
     public void subirCategoria() {
         if (categoria != null) {
@@ -234,5 +249,51 @@ public class PerfilDonante {
         this.misionActual = mision;
         inicializarProgreso();
     }
-}
 
+    public void actualizarCantidadOrganizacionesAyudadas() {
+        if (organizacionesAyudadas != null) {
+            this.totalOrganizacionesAyudadas = organizacionesAyudadas.size();
+        } else {
+            this.totalOrganizacionesAyudadas = 0;
+        }
+    }
+
+    public List<OrganizacionAyudada> getOrganizacionesAyudadas() {
+        return organizacionesAyudadas;
+    }
+
+    public void sumarOrganizacionAyudada(OrganizacionAyudada organizacion) {
+        if (this.organizacionesAyudadas == null) {
+            this.organizacionesAyudadas = new ArrayList<>();
+        }
+        this.organizacionesAyudadas.add(organizacion);
+        actualizarCantidadOrganizacionesAyudadas();
+    }
+
+    public int getSegmentadasOrganizacion(int idOrganizacion) {
+        if (this.organizacionesAyudadas == null) {
+            this.organizacionesAyudadas = new ArrayList<>();
+        }
+        OrganizacionAyudada organizacion = this.organizacionesAyudadas.stream()
+            .filter(o -> o.getIdOrganizacion() == idOrganizacion)
+            .findFirst()
+            .orElse(null);
+
+        if (organizacion == null) {
+            return 0;
+        } else {
+            return organizacion.getIdSegmentadas() != null ? organizacion.getIdSegmentadas().size() : 0;
+        }
+    }
+
+
+
+    public String getNombre(){
+     return nombre;
+    }
+    
+    public void setNombre(String nombre){
+        this.nombre = nombre;
+    }
+
+}

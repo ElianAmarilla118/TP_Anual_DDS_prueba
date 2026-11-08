@@ -24,6 +24,8 @@ public class MisionCompletitud extends Mision {
         if (historialMision == null || historialMision.isEmpty()) {
             return 0;
         }
+        // ahora mismo, la donacion importada tiene una lista de categorias, no una sola categoria, este metodo de calculo no sirve. RESOLVED
+        
         // Aquí guardamos únicamente las categorías que son distintas
         Set<String> categoriasVistas = new HashSet<>();
 
@@ -32,9 +34,18 @@ public class MisionCompletitud extends Mision {
             if (categoriasVistas.size() >= categoriasDistintasRequeridas) {
                 break;
             }
-            String categoriaActual = donacionInstancia.getCategoria();
-            if (categoriaActual != null) {
-                categoriasVistas.add(categoriaActual);
+
+
+            // hace un recorrido del vector de categorias por cada instancia. verificar funcionamiento #7. 
+            List<String> categoriasInstancia = donacionInstancia.getCategoria();
+            if (categoriasInstancia != null) {
+                for (String categoria : categoriasInstancia) {
+                    categoriasVistas.add(categoria);
+                    // Condición de parada rápida: si ya encontramos 10 distintas, frenamos el bucle
+                    if (categoriasVistas.size() >= categoriasDistintasRequeridas) {
+                        break;
+                    }
+                }
             }
         }
 

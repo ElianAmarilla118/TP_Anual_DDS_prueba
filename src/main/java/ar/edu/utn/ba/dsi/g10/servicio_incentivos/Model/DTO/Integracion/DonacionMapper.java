@@ -19,18 +19,25 @@ public class DonacionMapper {
         importada.setDonanteId(donanteId != null ? donanteId : 0L);
         importada.setCantidadDonada(dto.getCantBienes() != null ? dto.getCantBienes() : 0);
 
-        // Obtener categoría de la lista recibida
+        // Obtener categoría de la lista recibida. SOLO recibe la primera categoría de la lista, si no hay, asigna "General".
         if (dto.getCategoriasIncluidas() != null && !dto.getCategoriasIncluidas().isEmpty()) {
-            importada.setCategoria(dto.getCategoriasIncluidas().get(0).toString());
+            //asociacion directa vector a otro vector, no genera otro vector
+            importada.setCategoria(dto.getCategoriasIncluidas());
         } else {
-            importada.setCategoria("General");
+            importada.setCategoria("General"); // o "particular" revisar logica de negocio
         }
 
+
+        /* 
         // Determinar si la donación se considera entregada/exitosa
+
+        AHORA: esto se hace cuando recibe un mensaje del broker, que indica que la donacion fue entregada.. 
+
+        
         boolean esExitosa = dto.getCantidadSegmentadasEntregadas() != null
                 && dto.getCantidadSegmentadasEntregadas() > 0;
         importada.setExitosa(esExitosa);
-
+         */
         // Conversión de Date a LocalDate para la racha
         if (dto.getFechaEntrada() != null) {
             LocalDate fecha = dto.getFechaEntrada().toInstant()

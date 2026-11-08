@@ -15,8 +15,10 @@ public class Mapper {
     private int misionesCompletadas;
     
 
-    //parametros mision e insignia
+    //parametro compratido
     private String nombre; 
+
+    //parametros mision e insignia
     private String descripcion;
     private String categoria;
     private String insignia;  
@@ -28,6 +30,7 @@ public class Mapper {
     //mapper de metricas
     public Mapper(PerfilDonante perfil) {
         this.Id = perfil.getID();
+        this.nombre = perfil.getNombre();
         this.categoriaActual = perfil.getCategoria();
         this.cantidadInsignias = perfil.getInsignias().size();
         this.misionesCompletadas = perfil.getMisionesCompletadas();

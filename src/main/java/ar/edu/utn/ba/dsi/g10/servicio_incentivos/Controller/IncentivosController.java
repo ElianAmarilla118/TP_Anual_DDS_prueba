@@ -103,8 +103,9 @@ public class IncentivosController {
     @GetMapping("/{donanteId}/metricas")
     public ResponseEntity<?> obtenerMetricas(@PathVariable Long donanteId) {
         PerfilDonante perfilDonante = servicio.getMetricas(donanteId);
-
-       
+        //#3: Revisar y reestructurar metricas, separar entre donaciones ingresadas y entregas. 
+        
+        //ahora mismo las metricas solo devuelven el perfil completo, no solo metricas. Revisar logica de negocio. TODO: #3.
         if (perfilDonante == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Perfil no encontrado");
         }
@@ -239,10 +240,10 @@ public ResponseEntity<?> obtenerRankingMensual(){
         }
 
         perfilActualizado.setDonanteID(donanteId); // Asegura que conserve el ID de la URL
-        
         repo.buscarPorId(donanteId).ifPresent(perfil -> {
            perfil.setDatosDonante(new DatosDonante(
                 perfilActualizado.getNombre(),
+                //aqui solo se sobreescriben las donaciones, no se suman. Revisar logica de negocio. (Actualizar un perfil asi, es sobrescribir o sumar?) TODO: #4.
                 perfilActualizado.getDonaciones(),
                 perfilActualizado.getContactoPredeterminado()
             ));

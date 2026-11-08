@@ -3,6 +3,10 @@ package ar.edu.utn.ba.dsi.g10.servicio_incentivos.Model.Perfil;
 import java.time.LocalDate;
 import jakarta.persistence.*;
 
+
+// REVISAR
+
+
 @Entity
 @Table(name = "donacion_importada")
 public class DonacionImportada {
@@ -17,7 +21,9 @@ public class DonacionImportada {
     @Column(name = "cantidad_donada", nullable = false)
     private int cantidadDonada;
 
-    private String categoria;
+   // private int idOrganizacion;
+
+    private List<String> categoria;
 
     @Column(nullable = false)
     private boolean exitosa;
@@ -49,11 +55,13 @@ public class DonacionImportada {
         this.cantidadDonada = cantidadDonada;
     }
 
-    public String getCategoria() {
+    
+    public List<String> getCategoria() {
         return categoria;
     }
 
-    public void setCategoria(String categoria) {
+    public void setCategoria(List<String> categoria) {
+        //asociacion directa a la direccion del vector, no genera otro vector
         this.categoria = categoria;
     }
 
@@ -75,5 +83,12 @@ public class DonacionImportada {
 
     public void setFechaDonacion(LocalDate fechaDonacion) {
         this.fechaDonacion = fechaDonacion;
+    }
+    public int getIdOrganizacion() {
+        return idOrganizacion;
+    }
+
+    public void setIdOrganizacion(int idOrganizacion) {
+        this.idOrganizacion = idOrganizacion;
     }
 }
