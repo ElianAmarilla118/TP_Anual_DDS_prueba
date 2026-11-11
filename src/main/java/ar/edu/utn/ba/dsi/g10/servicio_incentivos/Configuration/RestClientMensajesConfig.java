@@ -10,8 +10,14 @@ import org.springframework.web.client.RestClient;
 
 @Configuration
 public class RestClientMensajesConfig {
-    @Value("${conexiones.cola-de-mensajes}")
+    //ver valor en pom.xml
+    @Value("${conexiones.cola-de-mensajes:http://localhost:8085}")
     private String urlMensajes;
+
+ @Bean
+    public RestClient.Builder restClientBuilder() {
+        return RestClient.builder();
+    }
 
     @Bean
     @Qualifier("restClientMensajes")

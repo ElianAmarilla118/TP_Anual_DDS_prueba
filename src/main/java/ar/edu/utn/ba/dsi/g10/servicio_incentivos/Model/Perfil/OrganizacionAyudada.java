@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
+@NoArgsConstructor
 public class OrganizacionAyudada {
     @Id
     private int idOrganizacion;

@@ -44,7 +44,7 @@ public class DonacionImportada {
     private boolean exitosa;
 
  
-    @Temporal(TemporalType.DATE)
+    //@Temporal(TemporalType.DATE)
     @Column(name = "fecha_donacion", nullable = false)
     private LocalDate fechaDonacion;
 
