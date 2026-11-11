@@ -10,7 +10,7 @@ import java.util.List;
     name = "mision",
     uniqueConstraints = {
         @UniqueConstraint(columnNames = {"categoria", "orden"}),
-        @UniqueConstraint(columnNames = {"nombre", "categoria"})
+        @UniqueConstraint(columnNames = {"nombre", "categoria"})}
 )
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "tipo_mision")
