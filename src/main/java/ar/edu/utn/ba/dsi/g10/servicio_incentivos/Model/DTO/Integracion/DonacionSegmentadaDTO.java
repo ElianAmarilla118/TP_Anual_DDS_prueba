@@ -12,7 +12,7 @@ import lombok.Setter;
 @Setter
 public class DonacionSegmentadaDTO {
     private Long idSegmentada;
-    private Integer cantidad;
+    private Integer cantidad; //cantidad de bienes?
    // private UnidadMedida unidad;
 }
 

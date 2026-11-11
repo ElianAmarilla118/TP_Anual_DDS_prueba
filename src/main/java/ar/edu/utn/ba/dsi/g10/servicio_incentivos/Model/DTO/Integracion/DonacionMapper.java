@@ -5,27 +5,30 @@ import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.List;
 
 @Component
 public class DonacionMapper {
 
-    public DonacionImportada aDonacionImportada(DonacionDTO dto, Long donanteId) {
+    public DonacionImportada aDonacionImportada(DonacionDTO dto) {
         if (dto == null) {
             return null;
         }
 
         DonacionImportada importada = new DonacionImportada();
-        importada.setDonacionId(dto.getId() != null ? dto.getId() : 0L);
-        importada.setDonanteId(donanteId != null ? donanteId : 0L);
+        importada.setDonanteId(dto.getDonante().getId());
+        importada.setDonacionId(dto. getId() != null ? dto.getId() : 0L);
         importada.setCantidadDonada(dto.getCantBienes() != null ? dto.getCantBienes() : 0);
 
-        // Obtener categoría de la lista recibida. SOLO recibe la primera categoría de la lista, si no hay, asigna "General".
-        if (dto.getCategoriasIncluidas() != null && !dto.getCategoriasIncluidas().isEmpty()) {
-            //asociacion directa vector a otro vector, no genera otro vector
-            importada.setCategoria(dto.getCategoriasIncluidas());
-        } else {
-            importada.setCategoria("General"); // o "particular" revisar logica de negocio
+        List<String> categorias = dto.getCategoriasIncluidas();
+        if (categorias != null) {
+            importada.setCategoria(categorias);
         }
+        else {
+            //#1: que devuelva una lista simple con elemento "general"
+            importada.setCategoria(List.of());
+        }
+        importada.setSegmentadasIncluidas(dto.getSegmentadasIncluidas());
 
 
         /* 

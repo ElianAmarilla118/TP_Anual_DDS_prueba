@@ -1,7 +1,8 @@
 package ar.edu.utn.ba.dsi.g10.servicio_incentivos.Model.Perfil;
 
 import ar.edu.utn.ba.dsi.g10.servicio_incentivos.Model.DTO.Integracion.DonacionDTO;
-import ar.edu.utn.ba.dsi.g10.servicio_incentivos.Model.Perfil.MedioContacto;
+import ar.edu.utn.ba.dsi.g10.servicio_incentivos.Model.DTO.Integracion.MedioContacto;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,9 +20,15 @@ public class DatosDonante {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     private String nombre;
-    @OneToMany(mappedBy = "donante", cascade = {CascadeType.PERSIST, CascadeType.MERGE}) 
-    private List<DonacionDTO> donaciones;
+    @OneToMany(mappedBy = "donante", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    private List<DonacionDTO> donaciones; 
 
-    @OneToOne 
-    private MedioContacto ContactoPredeterminado;
+    @OneToOne
+    private MedioContacto contactoPredeterminado;
+
+    public DatosDonante(String nombre, List<DonacionDTO> donaciones, MedioContacto contactoPredeterminado) {
+        this.nombre = nombre;
+        this.donaciones = donaciones;
+        this.contactoPredeterminado = contactoPredeterminado;
+    }
 }

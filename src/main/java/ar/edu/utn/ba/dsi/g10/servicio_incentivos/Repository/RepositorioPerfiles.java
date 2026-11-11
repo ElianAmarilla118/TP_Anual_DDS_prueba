@@ -6,8 +6,10 @@ import ar.edu.utn.ba.dsi.g10.servicio_incentivos.Model.Ranking.PosicionRanking;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface RepositorioPerfiles extends JpaRepository<PerfilDonante, Long> {
@@ -18,11 +20,18 @@ public interface RepositorioPerfiles extends JpaRepository<PerfilDonante, Long> 
     }
 
 
+    default Optional<PerfilDonante> buscarPorId(long donanteId) {
+        return findById(donanteId);
+    }
+
     @Transactional
     default void guardar(PerfilDonante perfil) {
         if (perfil != null) {
             save(perfil);
         }
+    }
+
+    default void reiniciarRankingMensual() {
     }
 
     @Transactional

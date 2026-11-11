@@ -168,6 +168,19 @@ public class ProgresoMision {
             marcarCompletada();
         }
     }
+    public void actualizar(){
+         progresoActual = Math.max(
+            0.0,
+            Math.min(
+                100.0,
+                misionAsociada.calcularProgreso(historialDonaciones)
+            )
+        );
+
+        if (progresoActual >= 100.0) {
+            marcarCompletada();
+        }
+    }
 
     public void marcarCompletada() {
         completada = true;
@@ -175,5 +188,21 @@ public class ProgresoMision {
             fechaCompletado = LocalDate.now();
         }
     }
+
+    public boolean verificarIdDonacion(Long idDonacion) {
+        if (idDonacion == null) return false;
+        return historialDonaciones.stream()
+            .anyMatch(d -> d.getDonacionId() == idDonacion);
+    }
+    public void marcarExitosa(Long idDonacion) {
+        if (idDonacion == null) return;
+        for (DonacionImportada donacion : historialDonaciones) {
+            if (donacion.getDonacionId() == idDonacion) {
+                donacion.setExitosa(true);
+                break;
+            }
+        }
+    }
+
 }
 

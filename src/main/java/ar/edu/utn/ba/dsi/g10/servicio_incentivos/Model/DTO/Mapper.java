@@ -1,9 +1,10 @@
 package ar.edu.utn.ba.dsi.g10.servicio_incentivos.Model.DTO;
 
+import ar.edu.utn.ba.dsi.g10.servicio_incentivos.Model.DTO.Integracion.DonacionDTO;
 import ar.edu.utn.ba.dsi.g10.servicio_incentivos.Model.Perfil.PerfilDonante;
 import ar.edu.utn.ba.dsi.g10.servicio_incentivos.Model.Misiones.Mision;
-import ar.edu.utn.ba.dsi.g10.servicio_incentivos.Model.CategoriasDonante.CategoriaDonante;
 import ar.edu.utn.ba.dsi.g10.servicio_incentivos.Model.Misiones.Insignia;
+import java.util.Date;
 import java.util.List;
 
 
@@ -22,6 +23,16 @@ public class Mapper {
     private String descripcion;
     private String categoria;
     private String insignia;  
+
+    //parametros donacionDTO
+    private long donanteId;
+    private long donacionId;
+    private List<Long> segmentadasIncluidas;
+    private Date fechaEntrada = new Date();
+    private List<String> categoriasIncluidas;
+    private int cantidadDonada;
+
+
 
 
     public Mapper() {
@@ -52,6 +63,19 @@ public class Mapper {
         this.nombre = insignia.getNombre();
         this.descripcion = insignia.getDescripcion();
         //por ahora no vemos el url 
+        return this;
+    }
+
+    public Mapper transformarDonacionDTO(DonacionDTO donacionDTO) {
+        if (donacionDTO == null) {
+            return this;
+        }
+        this.donacionId = donacionDTO.getId() != null ? donacionDTO.getId() : 0L;
+        this.donanteId = donacionDTO.getDonante() != null ? donacionDTO.getDonante().getId() : 0L;
+        this.categoria = donacionDTO.getCategoriasIncluidas() != null ? String.join(",", donacionDTO.getCategoriasIncluidas()) : null;
+        this.cantidadDonada = donacionDTO.getCantBienes() != null ? donacionDTO.getCantBienes() : 0;
+        this.segmentadasIncluidas = donacionDTO.getSegmentadasIncluidas();
+        this.fechaEntrada = donacionDTO.getFechaEntrada();
         return this;
     }
 

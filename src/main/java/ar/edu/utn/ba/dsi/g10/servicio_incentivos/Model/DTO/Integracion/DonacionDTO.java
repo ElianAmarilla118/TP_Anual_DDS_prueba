@@ -9,25 +9,19 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import ar.edu.utn.ba.dsi.g10.servicio_incentivos.Model.CategoriasDonante.Categoria;
-
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
-@Entity
 public class DonacionDTO {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private Date fechaEntrada = new Date();
-    @OneToMany(mappedBy = "donante", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private List<String> categoriasIncluidas = new ArrayList<>();
     private Integer cantBienes;
     private List<Long> segmentadasIncluidas; //SOLO las IDs de las segmentadas. AUN no entregadas.
     private DonanteDTO donante;
 
     public Integer cantidadSegmentadasEntregadas() {
-        return segmentadasIncluidas.size();
+        return segmentadasIncluidas == null ? 0 : segmentadasIncluidas.size();
     }
 }

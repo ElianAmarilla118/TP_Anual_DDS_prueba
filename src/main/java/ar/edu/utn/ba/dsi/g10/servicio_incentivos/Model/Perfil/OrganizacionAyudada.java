@@ -1,9 +1,16 @@
 package ar.edu.utn.ba.dsi.g10.servicio_incentivos.Model.Perfil;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class OrganizacionAyudada {
     private int idOrganizacion;
     private String nombreOrganizacion;
-    private List<String> idSegmentadas; 
+    private List<String> idSegmentadas;
+
+    public OrganizacionAyudada(int idOrganizacion) {
+        this.idOrganizacion = idOrganizacion;
+    }
 
     public OrganizacionAyudada(int idOrganizacion, String nombreOrganizacion) {
         this.idOrganizacion = idOrganizacion;
@@ -35,6 +42,16 @@ public class OrganizacionAyudada {
             this.idSegmentadas = new ArrayList<>();
         }
         this.idSegmentadas.add(idSegmentada);
+    }
+
+    public void agregarIdSegmentadas(List<Long> idsSegmentadas) {
+        if (idsSegmentadas == null) {
+            return;
+        }
+        if (this.idSegmentadas == null) {
+            this.idSegmentadas = new ArrayList<>();
+        }
+        idsSegmentadas.stream().map(String::valueOf).forEach(this.idSegmentadas::add);
     }
 
     public int getDonacionesSegmentadasRecibidas() {

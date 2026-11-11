@@ -20,4 +20,12 @@ public class MedioContacto {
     private MedioNotificacion tipo;
     private String correoElectronico;
     private String telefono;
+
+    public String getCorreo() {
+        return correoElectronico;
+    }
+
+    public void setCorreo(String correoElectronico) {
+        this.correoElectronico = correoElectronico;
+    }
 }

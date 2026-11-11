@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import ar.edu.utn.ba.dsi.g10.servicio_incentivos.Model.ServicioIncentivos;
 import ar.edu.utn.ba.dsi.g10.servicio_incentivos.Model.DTO.MisionResponseDTO;
 import ar.edu.utn.ba.dsi.g10.servicio_incentivos.Model.DTO.PosicionRankingDTO;
+import ar.edu.utn.ba.dsi.g10.servicio_incentivos.Model.DTO.Integracion.DonacionDTO;
 import ar.edu.utn.ba.dsi.g10.servicio_incentivos.Model.DTO.Integracion.DonanteDTO;
 import ar.edu.utn.ba.dsi.g10.servicio_incentivos.Model.DTO.Integracion.MensajeConfirmacionIncentivosDTO;
 import ar.edu.utn.ba.dsi.g10.servicio_incentivos.Model.DTO.PerfilMetricasDTO;
@@ -32,28 +33,18 @@ import java.util.List;
 @RequiredArgsConstructor
 public class IncentivosController {
     private final ServicioIncentivos servicio;
+    
     //post funcionando
     @PostMapping("/{donanteId}/donaciones")
     public ResponseEntity<String> procesarDonacion(
             @PathVariable Long donanteId,
-            @RequestBody DonacionImportada donacion) {
-        servicio.procesarNuevaDonacion(donanteId, donacion);
+            @RequestBody DonacionDTO donacion) {
+            
+            DonacionImportada donacionImportada = new DonacionImportada();
+            servicio.procesarNuevaDonacionDTO(donacion);
         return ResponseEntity.ok("Donación procesada correctamente");
     }
 
-    //todo: revisar el post donaciones dto
-
-    // POST: Recibe una nueva donación desde el servicio de donaciones usando DonacionDTO
-    /*@PostMapping("/{donanteId}/donaciones")
-    public ResponseEntity<String> procesarDonacion(
-            @PathVariable Long donanteId,
-            @RequestBody DonacionDTO donacionDTO) {
-
-        servicio.procesarNuevaDonacionDTO(donanteId, donacionDTO);
-        return ResponseEntity.ok("Donación procesada correctamente");
-    }*/
-
-    
     // get funcionando, Se instancio una mision racha y al donar este iba aumentando el progreso.
     @GetMapping("/{donanteId}/misiones")
     public ResponseEntity<?> obtenerMisionActual(@PathVariable Long donanteId) {
@@ -111,8 +102,10 @@ public class IncentivosController {
         }
         return ResponseEntity.ok(new PerfilMetricasDTO(perfilDonante));
     }
+    //PARA THYMELEAF: estos tres GETs, misiones, insiginias y perfiles, devuelven objetos completos, tener esto en cuenta para la construccion de los datos en el front...
+
   @GetMapping("/ranking-mensual")
-public ResponseEntity<?> obtenerRankingMensual(){
+    public ResponseEntity<?> obtenerRankingMensual(){
     
     List<PosicionRanking> ranking = servicio.getRanking(10); 
 
@@ -126,8 +119,11 @@ public ResponseEntity<?> obtenerRankingMensual(){
     System.out.println("DEBUG - Elementos en ranking dto: " + rankingDTO.size());
     return ResponseEntity.ok(rankingDTO);
 }
+    //Mismo aca: devuelve una lista de DTOS.
+
 
     // hardcodeado para probar la donacion 5
+    // Recibe DTO mision? canmpos sueltos?
     @PostMapping("/{donanteId}/nueva-mision")
     public ResponseEntity<String> asignarMision(
             @PathVariable Long donanteId) {
@@ -143,41 +139,8 @@ public ResponseEntity<?> obtenerRankingMensual(){
         return ResponseEntity.ok("Nueva misión asignada correctamente");
     }
 
-    //todo: revisar estos endpoint
+    //metodo viejo eliminado, consultar commits anteriores.
 
-
-    /*
-    // POST: Crear un nuevo perfil de donante conectado desde el servicio de donaciones
-    @PostMapping("/perfiles")
-    public ResponseEntity<String> crearPerfil(@RequestBody PerfilDonante perfil) {
-        servicio.guardarPerfil(perfil);
-        return ResponseEntity.status(HttpStatus.CREATED).body("Perfil creado correctamente");
-    }
-*/
-
-    //todo: revisar como funciona con donador dto
-
-    // POST: Crear perfil de donante desde Servicio de Donaciones enviando DonanteDTO
-    /*@PostMapping("/perfiles")
-    public ResponseEntity<String> crearPerfil(@RequestBody DonanteDTO donanteDTO) {
-        if (donanteDTO == null || donanteDTO.getId() == null || donanteDTO.getId() <= 0) {
-            return ResponseEntity
-                    .status(HttpStatus.BAD_REQUEST)
-                    .body("El ID del donante es obligatorio y debe ser un valor positivo");
-        }
-
-        if (servicio.getMetricas(donanteDTO.getId()) != null) {
-            return ResponseEntity
-                    .status(HttpStatus.CONFLICT)
-                    .body("El donante ya posee un perfil de incentivos registrado");
-        }
-
-        servicio.crearPerfilDesdeDTO(donanteDTO);
-
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body("Perfil de incentivos creado correctamente");
-    }*/
 
     // crear perfil propuesto
     @PostMapping("/perfiles")
@@ -198,36 +161,20 @@ public ResponseEntity<?> obtenerRankingMensual(){
                 .body("El donante ya tiene un perfil de incentivos");
         }
 
+
+        //#2: Analizar caso de uso, ¿se pueden hacer perfiles unicamente con el ID? ¿Como inicializo el nombre?
+        //Si se pueden crear perfiles con donaciones precargadas: rehacer crearPerfil y adaptar a este caso. 
+        //Si solo se necesita el ID, entonces incluir en el flujo el nombre. 
         servicio.crearPerfil(donanteID);
+        //crea perfil unicamente con el ID. 
+
 
         return ResponseEntity
             .status(HttpStatus.CREATED)
             .body("Perfil creado correctamente");
     }
 
-    //todo: revisar como funciona con donador dto
-
-    // PUT: Actualizar o sincronizar el perfil de un donante existente
-    /*@PutMapping("/perfiles/{donanteId}")
-    public ResponseEntity<String> actualizarPerfil(
-            @PathVariable Long donanteId,
-            @RequestBody DonanteDTO donanteDTO) {
-
-        PerfilDonante existente = servicio.getMetricas(donanteId);
-        if (existente == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Perfil no encontrado");
-        }
-
-        if (donanteDTO != null && donanteDTO.getDonaciones() != null) {
-            for (DonacionDTO donacion : donanteDTO.getDonaciones()) {
-                servicio.procesarNuevaDonacionDTO(donanteId, donacion);
-            }
-        }
-
-        return ResponseEntity.ok("Perfil actualizado correctamente");
-    }*/
-
-
+    
     // PUT: Actualizar un perfil existente buscando por ID
     @PutMapping("/perfiles/{donanteId}")
     public ResponseEntity<String> actualizarPerfil(
@@ -239,16 +186,14 @@ public ResponseEntity<?> obtenerRankingMensual(){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Perfil no encontrado");
         }
 
-        perfilActualizado.setDonanteID(donanteId); // Asegura que conserve el ID de la URL
-        repo.buscarPorId(donanteId).ifPresent(perfil -> {
-           perfil.setDatosDonante(new DatosDonante(
+        PerfilDonante perfil = servicio.getMetricas(donanteId);
+        perfil.setNombre(perfilActualizado.getNombre());
+        perfil.setDatosDonante(new DatosDonante(
                 perfilActualizado.getNombre(),
-                //aqui solo se sobreescriben las donaciones, no se suman. Revisar logica de negocio. (Actualizar un perfil asi, es sobrescribir o sumar?) TODO: #4.
                 perfilActualizado.getDonaciones(),
                 perfilActualizado.getContactoPredeterminado()
-            ));
-        });
-        servicio.guardarPerfil(perfilActualizado);
+        ));
+        servicio.guardarPerfil(perfil);
 
         return ResponseEntity.ok("Perfil actualizado correctamente");
     }

@@ -9,7 +9,11 @@ import ar.edu.utn.ba.dsi.g10.servicio_incentivos.Model.DTO.Integracion.DonacionM
 import ar.edu.utn.ba.dsi.g10.servicio_incentivos.Model.DTO.Integracion.DonanteDTO;
 import ar.edu.utn.ba.dsi.g10.servicio_incentivos.Model.DTO.Integracion.MensajeConfirmacionIncentivosDTO;
 import ar.edu.utn.ba.dsi.g10.servicio_incentivos.Model.Misiones.CatalogoMisiones;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestTemplate;
 
 
@@ -56,10 +60,20 @@ public class ServicioIncentivos {
     }
 
     // 3. Nuevo método para ser llamado desde IncentivosController recibiendo el DTO
-    public void procesarNuevaDonacionDTO(long donanteID, DonacionDTO donacionDTO) {
-        //#1: REVISAR CATEGORIAS... RESOLVED: Cambios en: DonacionImportada, DonacionMapper, DonacionDTO, ServicioIncentivos añadiendo vectores de categorias. Cambio en el calculoProgreso de completitud. 
-        DonacionImportada donacion = donacionMapper.aDonacionImportada(donacionDTO, donanteID);
-        this.procesarNuevaDonacion(donanteID, donacion);
+    public void procesarNuevaDonacionDTO(DonacionDTO donacionDTO) {
+        if (donacionDTO == null) {
+            return;
+        }
+        DonacionImportada donacion = donacionMapper.aDonacionImportada(donacionDTO);
+        this.procesarNuevaDonacion(donacionDTO.getDonante() != null ? donacionDTO.getDonante().getId() : 0L, donacion);
+    }
+
+    public void procesarNuevaDonacionDTO(long donanteId, DonacionDTO donacionDTO) {
+        if (donacionDTO == null) {
+            return;
+        }
+        DonacionImportada donacion = donacionMapper.aDonacionImportada(donacionDTO);
+        this.procesarNuevaDonacion(donanteId, donacion);
     }
 
     //
@@ -163,12 +177,11 @@ public class ServicioIncentivos {
         restClientMensajes
                 .post()
                 .uri("/mensajes")
-                .body(new NotificacionRequestDTO(tipoNotificacion, "Notificacion de mision", "Mision Completada", new DestinatarioRequestDTO(
-                    perfilDonante.getNombre(),
-                    perfilDonante.getContactoPredeterminado().getTelefono(),
-                    perfilDonante.getContactoPredeterminado().getCorreo(),
-                    perfilDonante.getContactoPredeterminado().getTelefono()),
-                    TipoEvento.MISION_COMPLETADA.toString()))
+                .body(Map.of(
+                    "tipo", "MISION_COMPLETADA",
+                    "titulo", "Notificacion de mision",
+                    "mensaje", "Mision Completada",
+                    "destinatario", perfilDonante.getNombre()))
                 .retrieve()
                 .toBodilessEntity();
     
@@ -191,12 +204,11 @@ public class ServicioIncentivos {
                 restClientMensajes
                 .post()
                 .uri("/mensajes")
-                .body(new NotificacionRequestDTO(tipoNotificacion, "Notificacion de categoria", "Subida de categoria", new DestinatarioRequestDTO(
-                    perfilDonante.getDatosDonante().getNombre(),
-                    perfilDonante.getDatosDonante().getContactoPredeterminado().getTelefono(),
-                    perfilDonante.getDatosDonante().getContactoPredeterminado().getCorreo(),
-                    perfilDonante.getDatosDonante().getContactoPredeterminado().getTelefono()),
-                    TipoEvento.CATEGORIA_SUBIDA.toString()))
+                .body(Map.of(
+                    "tipo", "CATEGORIA_SUBIDA",
+                    "titulo", "Notificacion de categoria",
+                    "mensaje", "Subida de categoria",
+                    "destinatario", perfilDonante.getNombre()))
                 .retrieve()
                 .toBodilessEntity();
     
@@ -246,10 +258,11 @@ public class ServicioIncentivos {
 
     @Transactional
     public PerfilDonante crearPerfil(DonanteDTO donanteDTO) {
+        if (donanteDTO == null || donanteDTO.getId() == null) {
+            return null;
+        }
         CategoriaDonante categoriaInicial = new CategoriaDonante();
-
-        DatosDonante datosDonante = new DatosDonante(donanteDTO.getNombre(), donanteDTO.getDonaciones(), donanteDTO.getContactoPredeterminado() );
-
+        DatosDonante datosDonante = new DatosDonante(donanteDTO.getNombre(), donanteDTO.getDonaciones(), donanteDTO.getContactoPredeterminado());
         Mision misionInicial = catalogoMisiones.obtenerPrimeraMision();
 
         PerfilDonante nuevoPerfil = new PerfilDonante(
@@ -260,7 +273,14 @@ public class ServicioIncentivos {
         );
 
         repo.guardar(nuevoPerfil);
+        return nuevoPerfil;
+    }
 
+    public PerfilDonante crearPerfil(long donanteId) {
+        CategoriaDonante categoriaInicial = new CategoriaDonante();
+        Mision misionInicial = catalogoMisiones.obtenerPrimeraMision();
+        PerfilDonante nuevoPerfil = new PerfilDonante(donanteId, categoriaInicial, misionInicial);
+        repo.guardar(nuevoPerfil);
         return nuevoPerfil;
     }
 
@@ -295,27 +315,12 @@ public class ServicioIncentivos {
 
 
 public void procesarConfirmacionIncentivos(ar.edu.utn.ba.dsi.g10.servicio_incentivos.Model.DTO.Integracion.MensajeConfirmacionIncentivosDTO dto) {
-    if (dto == null || dto.getIdDonantesIncluidos() == null) {
+    if (dto == null || dto.getIdEntidad() == null) {
         return;
     }
 
-    // Procesamos el impacto de la entrega exitosa para cada donante involucrado
-    for (Long donanteId : dto.getIdDonantesIncluidos()) {
-        if (donanteId == null) continue;
-
-
-        //hardcodeo mal
-        DonacionImportada donacion = new DonacionImportada();
-        donacion.setDonacionId(dto.getIdAsignada() != null ? dto.getIdAsignada() : 0L);
-        donacion.setDonanteId(donanteId);
-        donacion.setCantidadDonada(1); // Valor base representativo
-        donacion.setCategoria("General");
-        donacion.setExitosa(true); // Indispensable para las misiones de volumen/éxito
-        donacion.setFechaDonacion(java.time.LocalDate.now());
-
-        // Invocamos la lógica core nativa que maneja la persistencia en tu repo relacional
-        this.procesarNuevaDonacion(donanteId, donacion);
-    }
+    PerfilDonante usuario = repo.buscarPorId(0);
+    usuario.procesarDonacionConfirmada(dto);
 }
 
 

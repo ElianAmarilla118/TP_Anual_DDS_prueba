@@ -1,6 +1,8 @@
 package ar.edu.utn.ba.dsi.g10.servicio_incentivos.Model.Perfil;
 
 import java.time.LocalDate;
+import java.util.List;
+
 import jakarta.persistence.*;
 
 
@@ -21,13 +23,19 @@ public class DonacionImportada {
     @Column(name = "cantidad_donada", nullable = false)
     private int cantidadDonada;
 
-   // private int idOrganizacion;
+    private int idOrganizacion;
 
     private List<String> categoria;
+    //segmentadasIncluidas, podria tener un atributo de
+    private List<Long> segmentadasIncluidas;
+    //getters y setters de estos dos atributos
 
+    //no existe parametro exitosa en donacionDTO.
     @Column(nullable = false)
     private boolean exitosa;
 
+ 
+    @Temporal(TemporalType.DATE)
     @Column(name = "fecha_donacion", nullable = false)
     private LocalDate fechaDonacion;
 
@@ -65,6 +73,14 @@ public class DonacionImportada {
         this.categoria = categoria;
     }
 
+    public List<Long> getSegmentadasIncluidas() {
+        return segmentadasIncluidas;
+    }
+
+    public void setSegmentadasIncluidas(List<Long> segmentadasIncluidas) {
+        this.segmentadasIncluidas = segmentadasIncluidas;
+    }
+    
     public boolean isExitosa() {
         return exitosa;
     }

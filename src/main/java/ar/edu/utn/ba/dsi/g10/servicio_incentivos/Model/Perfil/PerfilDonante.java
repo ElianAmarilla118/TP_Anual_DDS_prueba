@@ -3,10 +3,11 @@ package ar.edu.utn.ba.dsi.g10.servicio_incentivos.Model.Perfil;
 import ar.edu.utn.ba.dsi.g10.servicio_incentivos.Model.CategoriasDonante.CategoriaDonante;
 import ar.edu.utn.ba.dsi.g10.servicio_incentivos.Model.DTO.Integracion.DonacionAsignadaDTO;
 import ar.edu.utn.ba.dsi.g10.servicio_incentivos.Model.DTO.Integracion.DonanteDTO;
+import ar.edu.utn.ba.dsi.g10.servicio_incentivos.Model.DTO.Integracion.MensajeConfirmacionIncentivosDTO;
 import ar.edu.utn.ba.dsi.g10.servicio_incentivos.Model.Misiones.AsignacionInsignia;
 import ar.edu.utn.ba.dsi.g10.servicio_incentivos.Model.Misiones.Insignia;
 import ar.edu.utn.ba.dsi.g10.servicio_incentivos.Model.Misiones.Mision;
-import ar.edu.utn.ba.dsi.g10.servicio_incentivos.Model.DTO.Integracion.medioContacto;
+import ar.edu.utn.ba.dsi.g10.servicio_incentivos.Model.DTO.Integracion.MedioContacto;
 import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -21,10 +22,10 @@ public class PerfilDonante {
     @Column(name = "donante_id")
     private long donanteID;
 
-   // @OneToOne
-   // private DatosDonante datosDonante; //DatosDonant es redundante, pongo medioContacto
+@OneToOne(cascade = CascadeType.ALL)
+    private DatosDonante datosDonante;
 
-    private medioContacto contactoPredeterminado;
+    private MedioContacto contactoPredeterminado;
 
     private String nombre;
     
@@ -74,6 +75,12 @@ public class PerfilDonante {
         this.misionActual = misionActual;
         this.racha = new RachaDonante();
         inicializarProgreso();
+    }
+
+    public PerfilDonante(long donanteID, DatosDonante datosDonante, CategoriaDonante categoria, Mision misionActual) {
+        this(donanteID, categoria, misionActual);
+        this.datosDonante = datosDonante;
+        this.nombre = datosDonante != null ? datosDonante.getNombre() : null;
     }
 
     public long getDonanteID() {
@@ -168,15 +175,16 @@ public class PerfilDonante {
 
     public void setDatosDonante(DatosDonante datosDonante) {
         this.datosDonante = datosDonante;
+        if (datosDonante != null) {
+            this.nombre = datosDonante.getNombre();
+        }
     }
 
-    /* 
-    public getDatosDonante() {
+    public DatosDonante getDatosDonante() {
         return datosDonante;
     }
-    */
 
-    public medioContacto getContactoPredeterminado() {
+    public MedioContacto getContactoPredeterminado() {
         return contactoPredeterminado;
     }
 
@@ -294,6 +302,56 @@ public class PerfilDonante {
     
     public void setNombre(String nombre){
         this.nombre = nombre;
+    }
+
+    public boolean verificarIdOrganizacionEnHistorial(int idOrganizacion) {
+        if (this.organizacionesAyudadas == null) {
+            return false;
+        }
+        return this.organizacionesAyudadas.stream()
+                .anyMatch(o -> o.getIdOrganizacion() == idOrganizacion);
+    }
+    public void agregarIdOrganizacionEnHistorial(int idOrganizacion) {
+        if (this.organizacionesAyudadas == null) {
+            this.organizacionesAyudadas = new ArrayList<>();
+        }
+        OrganizacionAyudada organizacion = new OrganizacionAyudada(idOrganizacion);
+        this.organizacionesAyudadas.add(organizacion);
+    }
+
+    public void procesarDonacionConfirmada(MensajeConfirmacionIncentivosDTO mensaje) {
+        if (mensaje == null) return;
+
+        Long idEntidad = mensaje.getIdEntidad();
+        Long idDonacion = mensaje.getIdAsignada();
+
+        if (idEntidad == null || idDonacion == null) {
+            return;
+        }
+
+        int idOrganizacion = idEntidad.intValue();
+
+        if (!verificarIdOrganizacionEnHistorial(idOrganizacion)) {
+            agregarIdOrganizacionEnHistorial(idOrganizacion);
+        }
+
+        ProgresoMision progreso = getProgreso();
+        if (progreso != null && progreso.verificarIdDonacion(idDonacion)) {
+            progreso.marcarExitosa(idDonacion);
+
+            if (organizacionesAyudadas != null) {
+                for (OrganizacionAyudada organizacion : organizacionesAyudadas) {
+                    if (organizacion.getIdOrganizacion() == idOrganizacion) {
+                        if (mensaje.getIdSegmentadasIncluidos() != null) {
+                            organizacion.agregarIdSegmentadas(mensaje.getIdSegmentadasIncluidos());
+                        }
+                        break;
+                    }
+                }
+            }
+
+            progreso.actualizar();
+        }
     }
 
 }
