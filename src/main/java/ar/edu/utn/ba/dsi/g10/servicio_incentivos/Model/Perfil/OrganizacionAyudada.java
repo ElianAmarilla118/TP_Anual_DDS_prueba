@@ -3,8 +3,14 @@ package ar.edu.utn.ba.dsi.g10.servicio_incentivos.Model.Perfil;
 import java.util.ArrayList;
 import java.util.List;
 
+@Entity 
+
 public class OrganizacionAyudada {
+    @Id
     private int idOrganizacion;
+    
+
+    //no recibe el nombre de ninguna parte.
     private String nombreOrganizacion;
     private List<String> idSegmentadas;
 

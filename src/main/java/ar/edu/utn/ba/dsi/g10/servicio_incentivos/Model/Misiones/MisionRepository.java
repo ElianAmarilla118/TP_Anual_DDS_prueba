@@ -18,4 +18,10 @@ public interface MisionRepository
     List<Mision> findByCategoriaOrderByOrdenAsc(
         Categoria categoria
     );
+
+      Optional<Mision> findByNombre(String nombre);
+
+     Optional<Mision> findByNombreIgnoreCaseAndCategoria(String nombre, Categoria categoria);
+
+    Optional<Mision> findTopByCategoriaOrderByOrdenDesc(Categoria categoria);
 }

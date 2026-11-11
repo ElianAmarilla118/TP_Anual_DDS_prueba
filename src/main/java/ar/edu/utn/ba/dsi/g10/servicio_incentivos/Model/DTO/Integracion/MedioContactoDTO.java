@@ -7,10 +7,10 @@ import lombok.Setter;
 
 @Setter
 @Getter
-@Entity
+//@Entity
 @NoArgsConstructor
 public class MedioContactoDTO {
-    @Id
+    //@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Enumerated(EnumType.STRING)

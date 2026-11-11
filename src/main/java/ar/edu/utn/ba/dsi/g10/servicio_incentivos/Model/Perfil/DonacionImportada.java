@@ -25,8 +25,17 @@ public class DonacionImportada {
 
     private int idOrganizacion;
 
+
+    @ElementCollection
+    @CollectionTable(name = "donacion_categorias", joinColumns = @JoinColumn(name = "donacion_id"))
+    @Column(name = "categoria")
     private List<String> categoria;
     //segmentadasIncluidas, podria tener un atributo de
+
+    
+    @ElementCollection
+    @CollectionTable(name = "donacion_segmentadas", joinColumns = @JoinColumn(name = "donacion_id"))
+    @Column(name = "segmentada_id")
     private List<Long> segmentadasIncluidas;
     //getters y setters de estos dos atributos
 

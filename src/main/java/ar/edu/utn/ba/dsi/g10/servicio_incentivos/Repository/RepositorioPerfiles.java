@@ -14,7 +14,7 @@ import java.util.Optional;
 @Repository
 public interface RepositorioPerfiles extends JpaRepository<PerfilDonante, Long> {
 
-    @Transactional
+    //@Transactional
     default PerfilDonante getxId(long donanteId) {
         return findById(donanteId).orElse(null);
     }
@@ -24,7 +24,7 @@ public interface RepositorioPerfiles extends JpaRepository<PerfilDonante, Long> 
         return findById(donanteId);
     }
 
-    @Transactional
+    //@Transactional
     default void guardar(PerfilDonante perfil) {
         if (perfil != null) {
             save(perfil);
@@ -34,7 +34,7 @@ public interface RepositorioPerfiles extends JpaRepository<PerfilDonante, Long> 
     default void reiniciarRankingMensual() {
     }
 
-    @Transactional
+   // @Transactional
     default boolean eliminar(long donanteId) {
         if (existsById(donanteId)) {
             deleteById(donanteId);
@@ -42,6 +42,17 @@ public interface RepositorioPerfiles extends JpaRepository<PerfilDonante, Long> 
         }
         return false;
     }
+
+    default PerfilDonante buscarPorDonacionId (long donacionId) { 
+       
+    }
+
+
+@Query("SELECT DISTINCT p FROM PerfilDonante p " +
+       "JOIN p.historialMisiones hm " +
+       "JOIN hm.historialDonaciones d " +
+       "WHERE d.donacionId = :donacionId")
+Optional<PerfilDonante> buscarPorDonacionId(@org.springframework.data.repository.query.Param("donacionId") Long donacionId);
 
     /**
      * Obtiene el ranking mensual de donantes basado en la cantidad de misiones completadas.

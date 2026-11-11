@@ -8,9 +8,9 @@ import java.util.List;
 @Entity
 @Table(
     name = "mision",
-    uniqueConstraints = @UniqueConstraint(
-        columnNames = {"categoria", "orden"}
-    )
+    uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"categoria", "orden"}),
+        @UniqueConstraint(columnNames = {"nombre", "categoria"})
 )
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "tipo_mision")
@@ -32,7 +32,7 @@ public abstract class Mision {
     @Column(nullable = false)
     private int orden;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = cascadeType.ALL)
     @JoinColumn(name = "insignia_id")
     private Insignia insignia;
 

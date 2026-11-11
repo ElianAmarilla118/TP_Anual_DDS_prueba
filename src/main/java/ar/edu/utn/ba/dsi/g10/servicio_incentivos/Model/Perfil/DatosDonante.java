@@ -15,12 +15,14 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
+//@OneToMany(mappedBy = "donante", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+//private List<DonacionImportada> donaciones;
 public class DatosDonante {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     private String nombre;
-    @OneToMany(mappedBy = "donante", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    //@OneToMany(mappedBy = "donante", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private List<DonacionDTO> donaciones; 
 
     @OneToOne
@@ -32,3 +34,5 @@ public class DatosDonante {
         this.contactoPredeterminado = contactoPredeterminado;
     }
 }
+
+//por ahora esta clase unicamente sirver para cargar datos en bloque, es redundante. #!

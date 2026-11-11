@@ -40,6 +40,7 @@ import java.util.List;
 
 
 @Service
+@Transactional
 public class ServicioIncentivos {
     private final RepositorioPerfiles repo;
     private final CatalogoMisiones catalogoMisiones;
@@ -116,16 +117,19 @@ public class ServicioIncentivos {
         }
     }
 
+    @Transactional(readOnly = true)
     public Mision getMisionActual(long donanteID) {
         PerfilDonante perfil = obtenerPerfil(donanteID);
         return perfil != null ? perfil.getMisionActual() : null;
     }
 
+    @Transactional(readOnly = true)
     public List<Insignia> getInsignias(long donanteId) {
         PerfilDonante perfil = obtenerPerfil(donanteId);
         return perfil != null ? perfil.getInsignias() : null;
     }
 
+    @Transactional(readOnly = true)
     public PerfilDonante getMetricas(long donanteID) {
         return obtenerPerfil(donanteID);
     }
@@ -164,7 +168,7 @@ public class ServicioIncentivos {
         }
 
         boolean seOtorgoInsignia =
-            perfilDonante.otorgarInsigniaSiCorresponde();
+            perfilDonante.otorgarInsigniasPendientes();
 
         if (!seOtorgoInsignia) {
             return;
@@ -191,6 +195,7 @@ public class ServicioIncentivos {
         enviarInsigniaAN8N(perfilDonante);
     }
 
+    @Transactional(readOnly = true)
     public List<PosicionRanking> getRanking(int tamaño) {
            return repo.obtenerRankingMensualNativo().stream()
             .limit(tamaño)
@@ -302,6 +307,7 @@ public class ServicioIncentivos {
         // 1. Crear el perfil inicial con su categoría y primera misión
         PerfilDonante nuevoPerfil = crearPerfil(donanteId);
         nuevoPerfil.setDatosDonante(datosDonante);
+        nuevoPerfil.cargarDatos();
 
         // 2. Si el DTO de donaciones trae historial previo, lo procesamos
         if (donanteDTO.getDonaciones() != null && !donanteDTO.getDonaciones().isEmpty()) {
@@ -315,12 +321,25 @@ public class ServicioIncentivos {
 
 
 public void procesarConfirmacionIncentivos(ar.edu.utn.ba.dsi.g10.servicio_incentivos.Model.DTO.Integracion.MensajeConfirmacionIncentivosDTO dto) {
-    if (dto == null || dto.getIdEntidad() == null) {
+   if (dto == null || dto.getIdAsignada() == null) {
         return;
     }
 
-    PerfilDonante usuario = repo.getxId(dto.getIdAsignada());
+    // 1. Buscamos el perfil dueño de la donación en PostgreSQL (Opción A)
+    PerfilDonante usuario = repo.buscarPorDonacionId(dto.getIdAsignada()).orElse(null);
+    if (usuario == null) {
+        return;
+    }
+
+    // 2. Procesamos la confirmación en el dominio (busca en misión actual o anteriores)
     usuario.procesarDonacionConfirmada(dto);
+
+    // 3. Verificamos si completó la misión (especialmente útil para MisionDonacionesExitosas)
+    verificarYCompletarMision(usuario);
+    verificarSubidaCategoria(usuario);
+
+    // 4. Persistimos los cambios en PostgreSQL
+    repo.guardar(usuario);
 }
 
 

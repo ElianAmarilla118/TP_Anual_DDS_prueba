@@ -9,6 +9,9 @@ import ar.edu.utn.ba.dsi.g10.servicio_incentivos.Model.Misiones.Insignia;
 import ar.edu.utn.ba.dsi.g10.servicio_incentivos.Model.Misiones.Mision;
 import ar.edu.utn.ba.dsi.g10.servicio_incentivos.Model.DTO.Integracion.MedioContacto;
 import jakarta.persistence.*;
+import main.java.ar.edu.utn.ba.dsi.g10.servicio_incentivos.Model.Perfil.DatosDonante;
+import main.java.ar.edu.utn.ba.dsi.g10.servicio_incentivos.Model.Perfil.OrganizacionAyudada;
+
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,9 +25,10 @@ public class PerfilDonante {
     @Column(name = "donante_id")
     private long donanteID;
 
-@OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.ALL)
     private DatosDonante datosDonante;
 
+    @OneToOne(cascade = CascadeType.ALL) @JoinColumn(name = "contacto_id")
     private MedioContacto contactoPredeterminado;
 
     private String nombre;
@@ -38,6 +42,7 @@ public class PerfilDonante {
     @Column(name = "total_donaciones_historicas", nullable = false)
     private int totalDonacionesHistoricas;
 
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrganizacionAyudada> organizacionesAyudadas;
 
     // lista ids
@@ -56,14 +61,15 @@ public class PerfilDonante {
         cascade = CascadeType.ALL,
         orphanRemoval = true
     )
-    private final List<AsignacionInsignia> insignias = new ArrayList<>();
+    private List<AsignacionInsignia> insignias = new ArrayList<>();
 
     @OneToMany(
         mappedBy = "perfil",
-        cascade = CascadeType.PERSIST
+        cascade = CascadeType.ALL,
+        orphanRemoval = true
     )
     @OrderBy("id ASC")
-    private final List<ProgresoMision> historialMisiones = new ArrayList<>();
+    private List<ProgresoMision> historialMisiones = new ArrayList<>();
 
 
     public PerfilDonante() {
@@ -213,6 +219,41 @@ public class PerfilDonante {
         insignias.add(new AsignacionInsignia(this, insigniaAResolver, LocalDate.now()));
         return true;
     }
+    public boolean otorgarInsigniaSiCorresponde(ProgresoMision progresoEvaluado) {
+    if (progresoEvaluado == null || !progresoEvaluado.getCompletada()) {
+        return false;
+    }
+
+    Mision mision = progresoEvaluado.getMisionAsociada();
+    if (mision == null) {
+        return false;
+    }
+
+    Insignia insigniaAResolver = mision.getInsignia();
+    if (insigniaAResolver == null) {
+        return false;
+    }
+
+    boolean yaOtorgada = insignias.stream()
+            .anyMatch(a -> a.getInsignia() != null && Objects.equals(a.getInsignia().getID(), insigniaAResolver.getID()));
+
+    if (yaOtorgada) {
+        return false;
+    }
+
+    insignias.add(new AsignacionInsignia(this, insigniaAResolver, LocalDate.now()));
+    return true;
+}
+
+public boolean otorgarInsigniasPendientes() {
+    boolean algunaOtorgada = false;
+    for (ProgresoMision progreso : historialMisiones) {
+        if (otorgarInsigniaSiCorresponde(progreso)) {
+            algunaOtorgada = true;
+        }
+    }
+    return algunaOtorgada;
+}
 
     public ProgresoMision getProgreso() {
         if (misionActual == null) return null;
@@ -319,6 +360,18 @@ public class PerfilDonante {
         this.organizacionesAyudadas.add(organizacion);
     }
 
+public ProgresoMision obtenerProgresoDeDonacion(Long idDonacion) {
+    if (idDonacion == null || historialMisiones == null) {
+        return null;
+    }
+    return historialMisiones.stream()
+            .filter(p -> p.verificarIdDonacion(idDonacion))
+            .findFirst()
+            .orElse(null);
+}
+
+
+
     public void procesarDonacionConfirmada(MensajeConfirmacionIncentivosDTO mensaje) {
         if (mensaje == null) return;
 
@@ -335,9 +388,9 @@ public class PerfilDonante {
             agregarIdOrganizacionEnHistorial(idOrganizacion);
         }
 
-        ProgresoMision progreso = getProgreso();
-        if (progreso != null && progreso.verificarIdDonacion(idDonacion)) {
-            progreso.marcarExitosa(idDonacion);
+         ProgresoMision progreso = obtenerProgresoDeDonacion(idDonacion);
+        if (progreso != null) {
+        progreso.marcarExitosa(idDonacion);}
 
             if (organizacionesAyudadas != null) {
                 for (OrganizacionAyudada organizacion : organizacionesAyudadas) {
@@ -352,6 +405,14 @@ public class PerfilDonante {
 
             progreso.actualizar();
         }
-    }
 
+
+    public boolean realizoDonacion (long id){ return progreso.verificarIdDonacion(id);}
+
+    public void cargarDatos(){
+        this.id = datosDonante.getId();
+        this.nombre = datosDonante.getNombre();
+        this.contactoPredeterminado = datosDonante.getContactoPredeterminado();
+
+    }
 }

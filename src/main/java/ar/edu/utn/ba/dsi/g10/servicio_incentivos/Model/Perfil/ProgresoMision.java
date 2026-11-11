@@ -41,6 +41,7 @@ public class ProgresoMision {
         )
     )
     @OrderBy("fechaDonacion ASC, donacionId ASC")
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private List<DonacionImportada> historialDonaciones = new ArrayList<>();
 
     @Column(name = "fecha_inicio", nullable = false)

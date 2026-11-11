@@ -162,11 +162,9 @@ public class IncentivosController {
         }
 
 
-        //#2: Analizar caso de uso, ¿se pueden hacer perfiles unicamente con el ID? ¿Como inicializo el nombre?
-        //Si se pueden crear perfiles con donaciones precargadas: rehacer crearPerfil y adaptar a este caso. 
-        //Si solo se necesita el ID, entonces incluir en el flujo el nombre. 
-        servicio.crearPerfil(donanteID);
-        //crea perfil unicamente con el ID. 
+        
+        servicio.crearPerfilDesdeDTO(datos);
+    
 
 
         return ResponseEntity
@@ -187,12 +185,13 @@ public class IncentivosController {
         }
 
         PerfilDonante perfil = servicio.getMetricas(donanteId);
-        perfil.setNombre(perfilActualizado.getNombre());
+        //perfil.setNombre(perfilActualizado.getNombre());
         perfil.setDatosDonante(new DatosDonante(
                 perfilActualizado.getNombre(),
                 perfilActualizado.getDonaciones(),
                 perfilActualizado.getContactoPredeterminado()
         ));
+        perfilActualizado.cargarDatos();
         servicio.guardarPerfil(perfil);
 
         return ResponseEntity.ok("Perfil actualizado correctamente");
