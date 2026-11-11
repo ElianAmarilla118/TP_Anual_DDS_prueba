@@ -2,6 +2,7 @@ package ar.edu.utn.ba.dsi.g10.servicio_incentivos.Model.Perfil;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
