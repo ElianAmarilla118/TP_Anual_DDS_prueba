@@ -319,7 +319,7 @@ public void procesarConfirmacionIncentivos(ar.edu.utn.ba.dsi.g10.servicio_incent
         return;
     }
 
-    PerfilDonante usuario = repo.buscarPorId(0);
+    PerfilDonante usuario = repo.getxId(dto.getIdAsignada());
     usuario.procesarDonacionConfirmada(dto);
 }
 

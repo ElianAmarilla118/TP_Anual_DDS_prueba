@@ -11,7 +11,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class MensajeConfirmacionIncentivosDTO {
-    private Long idAsignada;
+    private Long idAsignada; //id asignada del user o la donacion???
     private List<Long> idSegmentadasIncluidos;
     private Long idEntidad;
 }
