@@ -191,7 +191,7 @@ public class IncentivosController {
                 perfilActualizado.getDonaciones(),
                 perfilActualizado.getContactoPredeterminado()
         ));
-        perfilActualizado.cargarDatos();
+        perfil.cargarDatos();
         servicio.guardarPerfil(perfil);
 
         return ResponseEntity.ok("Perfil actualizado correctamente");

@@ -31,7 +31,7 @@ public class ProgresoMision {
     @Column(name = "progreso_actual", nullable = false)
     private double progresoActual;
 
-    @ManyToMany
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(
         name = "historial_mision_donacion",
         joinColumns = @JoinColumn(name = "historial_id"),
@@ -41,7 +41,6 @@ public class ProgresoMision {
         )
     )
     @OrderBy("fechaDonacion ASC, donacionId ASC")
-    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private List<DonacionImportada> historialDonaciones = new ArrayList<>();
 
     @Column(name = "fecha_inicio", nullable = false)

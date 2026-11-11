@@ -9,8 +9,6 @@ import ar.edu.utn.ba.dsi.g10.servicio_incentivos.Model.Misiones.Insignia;
 import ar.edu.utn.ba.dsi.g10.servicio_incentivos.Model.Misiones.Mision;
 import ar.edu.utn.ba.dsi.g10.servicio_incentivos.Model.DTO.Integracion.MedioContacto;
 import jakarta.persistence.*;
-import main.java.ar.edu.utn.ba.dsi.g10.servicio_incentivos.Model.Perfil.DatosDonante;
-import main.java.ar.edu.utn.ba.dsi.g10.servicio_incentivos.Model.Perfil.OrganizacionAyudada;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -407,12 +405,17 @@ public ProgresoMision obtenerProgresoDeDonacion(Long idDonacion) {
         }
 
 
-    public boolean realizoDonacion (long id){ return progreso.verificarIdDonacion(id);}
+    public boolean realizoDonacion(long id) {
+        ProgresoMision progreso = getProgreso();
+        return progreso != null && progreso.verificarIdDonacion(id);
+    }
 
-    public void cargarDatos(){
-        this.id = datosDonante.getId();
+    public void cargarDatos() {
+        if (datosDonante == null) {
+            return;
+        }
+        this.donanteID = datosDonante.getId();
         this.nombre = datosDonante.getNombre();
         this.contactoPredeterminado = datosDonante.getContactoPredeterminado();
-
     }
 }

@@ -23,7 +23,8 @@ public class DatosDonante {
     private long id;
     private String nombre;
     //@OneToMany(mappedBy = "donante", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    private List<DonacionDTO> donaciones; 
+    @Transient
+    private List<DonacionDTO> donaciones;
 
     @OneToOne
     private MedioContacto contactoPredeterminado;

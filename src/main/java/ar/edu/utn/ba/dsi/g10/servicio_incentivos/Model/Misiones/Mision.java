@@ -32,7 +32,7 @@ public abstract class Mision {
     @Column(nullable = false)
     private int orden;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = cascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "insignia_id")
     private Insignia insignia;
 

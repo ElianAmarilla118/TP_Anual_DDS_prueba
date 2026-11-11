@@ -43,8 +43,8 @@ public interface RepositorioPerfiles extends JpaRepository<PerfilDonante, Long> 
         return false;
     }
 
-    default PerfilDonante buscarPorDonacionId (long donacionId) { 
-       
+    default PerfilDonante buscarPorDonacionId(long donacionId) {
+        return findById(donacionId).orElse(null);
     }
 
 
