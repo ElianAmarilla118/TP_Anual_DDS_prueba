@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html xmlns:th="http://thymeleaf.org" lang="es">
+<body>
+
+  <!-- WIDGET 1: MÉTRICAS -->
+  <section th:fragment="widget-metricas(metricas)" aria-labelledby="titulo-metricas" class="card">
+    <h2 id="titulo-metricas">Resumen de Impacto</h2>
+    <div th:if="${metricas != null}" class="grid-metricas">
+      <div class="stat-box">
+        <span class="label">Categoría Actual</span>
+        <strong class="value" th:text="${metricas.categoriaActual}">Colaborador</strong>
+      </div>
+      <div class="stat-box">
+        <span class="label">Misiones Completadas</span>
+        <strong class="value" th:text="${metricas.misionesCompletadas}">0</strong>
+      </div>
+      <div class="stat-box">
+        <span class="label">Insignias Obtenidas</span>
+        <strong class="value" th:text="${metricas.cantidadInsignias}">0</strong>
+      </div>
+    </div>
+  </section>
+
+  <!-- WIDGET 2: MISIÓN ACTUAL -->
+  <section th:fragment="widget-mision(mision)" aria-labelledby="titulo-mision" class="card">
+    <h2 id="titulo-mision">Misión en Curso</h2>
+    <div th:if="${mision != null}">
+      <h3 th:text="${mision.nombre}">Nombre Misión</h3>
+      <p th:text="${mision.descripcion}">Descripción de la misión</p>
+      <p><small>Recompensa: <strong th:text="${mision.insigniaNombre}">Insignia</strong></small></p>
+      
+      <!-- Barra de progreso accesible -->
+      <div class="progress-container" role="progressbar" 
+           th:aria-valuenow="${mision.progreso}" aria-valuemin="0" aria-valuemax="100">
+        <div class="progress-bar" th:style="'width:' + ${mision.progreso} + '%'"
+             th:text="${#numbers.formatDecimal(mision.progreso, 1, 0)} + '%'">0%</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- WIDGET 3: INSIGNIAS -->
+  <section th:fragment="widget-insignias(insignias)" aria-labelledby="titulo-insignias" class="card">
+    <h2 id="titulo-insignias">Mis Insignias</h2>
+    <ul th:if="${insignias != null and !insignias.isEmpty()}" class="lista-insignias">
+      <li th:each="insignia : ${insignias}" class="badge-item">
+        <strong th:text="${insignia.nombre}">Nombre Insignia</strong>
+        <p th:text="${insignia.descripcion}">Descripción</p>
+      </li>
+    </ul>
+    <p th:if="${insignias == null or insignias.isEmpty()}">Aún no has desbloqueado insignias.</p>
+  </section>
+
+  <!-- WIDGET 4: RANKING MENSUAL -->
+  <section th:fragment="widget-ranking(ranking)" aria-labelledby="titulo-ranking" class="card">
+    <h2 id="titulo-ranking">Ranking Mensual de Donantes</h2>
+    <table th:if="${ranking != null and !ranking.isEmpty()}" class="tabla-datos">
+      <thead>
+        <tr>
+          <th scope="col">Posición</th>
+          <th scope="col">ID Donante</th>
+          <th scope="col">Misiones Cumplidas</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr th:each="pos, iterStat : ${ranking}">
+          <td th:text="${iterStat.count}">1</td>
+          <td th:text="'Donante #' + ${pos.id}">Donante #1</td>
+          <td th:text="${pos.puntaje}">0</td>
+        </tr>
+      </tbody>
+    </table>
+    <p th:if="${ranking == null or ranking.isEmpty()}">No hay datos en el ranking este mes.</p>
+  </section>
+
+</body>
+</html>

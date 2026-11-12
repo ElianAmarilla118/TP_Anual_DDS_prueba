@@ -25,4 +25,11 @@ server:
 
 conexiones:
   cola-de-mensajes: ${COLA_DE_MENSAJES:http://localhost:8081}
-   
+    
+keyclock:  
+  spring:
+    security:
+      oauth2:
+        resourceserver:
+          jwt:
+            issuer-uri: ${KEYCLOAK_ISSUER_URI}

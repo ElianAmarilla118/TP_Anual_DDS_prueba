@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html xmlns:th="http://thymeleaf.org" lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DonaTrack - Ranking Mensual</title>
+  <link rel="stylesheet" th:href="@{/css/donatrack.css}">
+</head>
+<body>
+  <main class="container">
+    <div th:if="${error}" role="alert" class="toast-error" th:text="${error}"></div>
+
+    <!-- Fragmento acoplable -->
+    <div th:replace="~{fragments/incentivos-widgets :: widget-ranking(${ranking})}"></div>
+
+    <nav aria-label="Navegación general" class="nav-actions">
+      <!-- Por defecto vuelve al perfil de prueba ID 1 -->
+      <a th:href="@{/ui/incentivos/1/metricas}" class="btn">Volver a Mi Perfil</a>
+    </nav>
+  </main>
+</body>
+</html>

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://thymeleaf.org" lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DonaTrack - Gestión de Incentivos</title>
+  <link rel="stylesheet" th:href="@{/css/donatrack.css}">
+</head>
+<body>
+  <main class="container">
+    <h1>Administración de Perfiles e Incentivos</h1>
+
+    <!-- Feedback visual no intrusivo (Entrega 6) -->
+    <div th:if="${exito}" role="status" class="toast-success" th:text="${exito}"></div>
+    <div th:if="${error}" role="alert" class="toast-error" th:text="${error}"></div>
+
+    <!-- Formulario 1: Crear Perfil -->
+    <section class="card" aria-labelledby="titulo-crear">
+      <h2 id="titulo-crear">Crear Perfil de Incentivos</h2>
+      <form th:action="@{/ui/incentivos/perfiles}" method="post" class="form-inline">
+        <label for="donanteIdCrear">ID del Donante:</label>
+        <input type="number" id="donanteIdCrear" name="donanteId" required min="1" placeholder="Ej: 2" class="input-field">
+        <button type="submit" class="btn">Crear Perfil</button>
+      </form>
+    </section>
+
+    <!-- Formulario 2: Eliminar Perfil -->
+    <section class="card" aria-labelledby="titulo-eliminar">
+      <h2 id="titulo-eliminar">Eliminar Perfil Existente</h2>
+      <form id="formEliminar" method="post" onsubmit="this.action='/ui/incentivos/perfiles/' + document.getElementById('donanteIdEliminar').value + '/eliminar'">
+        <label for="donanteIdEliminar">ID del Donante a eliminar:</label>
+        <input type="number" id="donanteIdEliminar" required min="1" placeholder="Ej: 2" class="input-field">
+        <button type="submit" class="btn btn-danger">Eliminar Perfil</button>
+      </form>
+    </section>
+
+    <nav aria-label="Navegación general" class="nav-actions">
+      <a th:href="@{/ui/incentivos/1/metricas}" class="btn">Ir a Perfil Donante #1</a>
+      <a th:href="@{/ui/incentivos/ranking-mensual}" class="btn">Ver Ranking Mensual</a>
+    </nav>
+  </main>
+</body>
+</html>
