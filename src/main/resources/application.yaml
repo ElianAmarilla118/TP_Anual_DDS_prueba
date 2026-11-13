@@ -2,8 +2,13 @@ spring:
   application:
     name: servicio_incentivos
 
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: https://tp-anual-grupo10-k3002-lhze.onrender.com/realms/donatrack
+
   datasource:
-    
     url: jdbc:postgresql://dpg-dbi815ei0phs73d47br0-a.oregon-postgres.render.com:5432/incentivos_db_ipvk?sslmode=require
     username: ${DATABASE_USERNAME}
     password: ${DATABASE_PASSWORD}
@@ -25,11 +30,3 @@ server:
 
 conexiones:
   cola-de-mensajes: ${COLA_DE_MENSAJES:http://localhost:8081}
-    
-keyclock:  
-  spring:
-    security:
-      oauth2:
-        resourceserver:
-          jwt:
-            issuer-uri: https://tp-anual-grupo10-k3002-lhze.onrender.com/realms/donatrack
