@@ -32,4 +32,4 @@ keyclock:
       oauth2:
         resourceserver:
           jwt:
-            issuer-uri: ${KEYCLOAK_ISSUER_URI}
+            issuer-uri: ${conexiones.auth-url}/realms/donatrack
