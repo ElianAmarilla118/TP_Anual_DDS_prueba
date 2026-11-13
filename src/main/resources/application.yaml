@@ -32,4 +32,4 @@ keyclock:
       oauth2:
         resourceserver:
           jwt:
-            issuer-uri: ${conexiones.auth-url}/realms/donatrack
+            issuer-uri: https://tp-anual-grupo10-k3002-lhze.onrender.com/realms/donatrack
